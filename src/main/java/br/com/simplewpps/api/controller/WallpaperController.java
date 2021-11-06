@@ -104,21 +104,21 @@ public class WallpaperController {
 		Wallpaper wpp = opt.get();
 		TipoPerfil moderador = this.perfilRepository.findByNome("ROLE_MODERADOR").get();
 		
-		if (!this.tokenService.usuarioEhDono(request, userRepository, wpp) ||
-				!this.tokenService.getUsuario(request, userRepository).getAuthorities().contains(moderador)) 
-			return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+		if (this.tokenService.usuarioEhDono(request, userRepository, wpp) ||
+				this.tokenService.getUsuario(request, userRepository).getAuthorities().contains(moderador)) {
+			wpp.setDescricao(form.getDescricao());
+			wpp.setTitulo(form.getTitulo());
+			wpp.setUrl(form.getUrl());
+			wpp.resetarCategorias();
 		
-		wpp.setDescricao(form.getDescricao());
-		wpp.setTitulo(form.getTitulo());
-		wpp.setUrl(form.getUrl());
-		wpp.resetarCategorias();
-	
-		HashSet<Categoria> categorias = form.getCategoriasBanco(catRepository);
-		if (categorias == null) return ResponseEntity.badRequest().body("Categorias inválidas, um wallpaper deve ter entre uma e cinco categorias");
-		
-		categorias.forEach(cat -> wpp.adicionarCategoria(cat));
-		this.wppRepository.save(wpp);
-		return ResponseEntity.ok().build();
+			HashSet<Categoria> categorias = form.getCategoriasBanco(catRepository);
+			if (categorias == null) return ResponseEntity.badRequest().body("Categorias inválidas, um wallpaper deve ter entre uma e cinco categorias");
+			
+			categorias.forEach(cat -> wpp.adicionarCategoria(cat));
+			this.wppRepository.save(wpp);
+			return ResponseEntity.ok().build();
+		}
+		return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
 	}
 	
 	@DeleteMapping("/{id}")
@@ -130,11 +130,12 @@ public class WallpaperController {
 		if (opt.isEmpty()) return ResponseEntity.notFound().build();
 		Wallpaper wpp = opt.get();
 		
-		if (!this.tokenService.usuarioEhDono(request, userRepository, wpp) || 
-				!this.tokenService.getUsuario(request, userRepository).getAuthorities().contains(moderador)) 
-			return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-			
-		this.wppRepository.delete(wpp);
-		return ResponseEntity.ok().build();
+		if (this.tokenService.usuarioEhDono(request, userRepository, wpp) || 
+				this.tokenService.getUsuario(request, userRepository).getAuthorities().contains(moderador)) {
+						
+			this.wppRepository.delete(wpp);
+			return ResponseEntity.ok().build();
+		}
+		return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
 	}
 }

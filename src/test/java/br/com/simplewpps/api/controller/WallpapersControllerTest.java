@@ -2,7 +2,10 @@ package br.com.simplewpps.api.controller;
 
 import java.net.URI;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -19,31 +22,95 @@ import br.com.simplewpps.api.service.MockMvcService;
 @SpringBootTest(classes=SimplewppsApplication.class)
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
+@TestInstance(Lifecycle.PER_CLASS)
 public class WallpapersControllerTest {
 
 	@Autowired
 	private MockMvcService mock;
+	private String tokenUser;
+	private String tokenMod;
 	
-	@Test
-	public void deveRetornarJsonDetalhadoQuandoIdForPassadoNaURL() throws Exception {
-		ResultActions result = mock.performarGet(new URI("/wpps/1"));
-		result.andExpect(MockMvcResultMatchers
-				.status()
-				.isOk());
-		result.andExpect(MockMvcResultMatchers
-				.content()
-				.json("{\r\n"
-						+ "    \"id\": 1,\r\n"
-						+ "    \"titulo\": \"wpp legal\",\r\n"
-						+ "    \"descricao\": \"wpp bem legal\",\r\n"
-						+ "    \"categorias\": [\r\n"
-						+ "        {\r\n"
-						+ "            \"nome\": \"paisagem\"\r\n"
-						+ "        }\r\n"
-						+ "    ],\r\n"
-						+ "    \"dataCriacao\": null,\r\n"
-						+ "    \"nomeAutor\": \"breno\"\r\n"
-						+ "}"));
+	@BeforeAll
+	public void executarLoginMod() throws Exception {
+		String content = mock.efetuarLogin("mod@modmail.com", "1234567")
+				.andReturn()
+				.getResponse()
+				.getContentAsString();
+		this.tokenMod = content.substring(content.indexOf(":") + 1, content.indexOf(","));
 	}
 	
+	@BeforeAll
+	public void executarLoginUsuario() throws Exception {
+		String content = mock.efetuarLogin("breno@brenomail.com", "1234567")
+				.andReturn()
+				.getResponse()
+				.getContentAsString();
+		this.tokenUser = content.substring(content.indexOf(":") + 1, content.indexOf(","));
+	}
+	
+	@Test
+	public void naoPermiteAlteracoesSeOUsuarioNaoEstiverLogado() throws Exception {
+		ResultActions result_del = mock.performarDelete(new URI("/wpps/1"), "");
+		result_del.andExpect(MockMvcResultMatchers
+				.status()
+				.isForbidden());
+		
+		ResultActions result_put = mock.salvarWallpaper(Long.parseLong("1"), "titulo", "descr", "url", "cat", "");
+		result_put.andExpect(MockMvcResultMatchers
+				.status()
+				.isForbidden());
+	}
+	
+	@Test
+	public void deveCriarWallpaperQuandoUsuarioEstiverLogado() throws Exception {
+		
+		ResultActions result_post = mock.salvarWallpaper(null, "wpp legal", "wpp legal", 
+				"https://wallpaperaccess.com/full/2029165.jpg", "paisagem", tokenUser);
+		result_post.andExpect(MockMvcResultMatchers
+				.status()
+				.isCreated());
+	}
+	
+	@Test
+	public void deveAlterarWallpaperSeUsuarioLogadoForAutor() throws Exception {
+		
+		Long id = Long.valueOf(this.mock.salvarWallpaper(null, "wpp legal", "wpp legal", 
+				"https://wallpaperaccess.com/full/2029165.jpg", "paisagem", tokenUser)
+				.andReturn()
+				.getResponse()
+				.getHeader("Location")
+				.split("/")[4]);
+		
+		ResultActions result_put = mock.salvarWallpaper(id, "teste", "teste", 
+				"https://wallpaperaccess.com/full/2029165.jpg", "paisagem", tokenUser);
+		result_put.andExpect(MockMvcResultMatchers
+				.status()
+				.isOk());
+	}
+	
+	@Test
+	public void somenteAutorOuModeradorPodemDeletarOWallpaper() throws Exception {
+		
+		Long id = Long.valueOf(this.mock.salvarWallpaper(null, "wpp legal", "wpp legal", 
+				"https://wallpaperaccess.com/full/2029165.jpg", "paisagem", tokenUser)
+				.andReturn()
+				.getResponse()
+				.getHeader("Location")
+				.split("/")[4]);
+		
+		ResultActions result = mock.performarDelete(new URI("/wpps/2"), tokenUser);
+		result.andExpect(MockMvcResultMatchers
+				.status()
+				.isForbidden());
+		
+		ResultActions result_delete = mock.performarDelete(new URI("/wpps/1"), tokenUser);
+		result_delete.andExpect(MockMvcResultMatchers
+				.status()
+				.isOk());
+		
+		ResultActions result_mod = mock.performarDelete(new URI("/wpps/" + id), tokenMod);
+		result_mod.andExpect(MockMvcResultMatchers
+				.status()
+				.isOk());
+	}
 }
