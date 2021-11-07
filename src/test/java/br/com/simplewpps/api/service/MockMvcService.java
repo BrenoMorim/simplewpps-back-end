@@ -74,4 +74,10 @@ public class MockMvcService {
 		if(id == null) return this.performarPost(new URI("/wpps"), json, token);
 		return this.performarPut(new URI("/wpps/" + id), json, token);
 	}
+	public ResultActions salvarCategoria(Long id, String nome, String token) throws Exception {
+		String json = String.format("{\"nome\": \"%s\"}", nome);
+		
+		if(id == null) return this.performarPost(new URI("/categorias"), json, token);
+		return this.performarPut(new URI("/categorias/" + id), json, token);
+	}
 }

@@ -50,13 +50,13 @@ public class WallpapersControllerTest {
 	
 	@Test
 	public void naoPermiteAlteracoesSeOUsuarioNaoEstiverLogado() throws Exception {
-		ResultActions result_del = mock.performarDelete(new URI("/wpps/1"), "");
-		result_del.andExpect(MockMvcResultMatchers
+		ResultActions resultDel = mock.performarDelete(new URI("/wpps/1"), "");
+		resultDel.andExpect(MockMvcResultMatchers
 				.status()
 				.isForbidden());
 		
-		ResultActions result_put = mock.salvarWallpaper(Long.parseLong("1"), "titulo", "descr", "url", "cat", "");
-		result_put.andExpect(MockMvcResultMatchers
+		ResultActions resultPut = mock.salvarWallpaper(Long.parseLong("1"), "titulo", "descr", "url", "cat", "");
+		resultPut.andExpect(MockMvcResultMatchers
 				.status()
 				.isForbidden());
 	}
@@ -81,9 +81,9 @@ public class WallpapersControllerTest {
 				.getHeader("Location")
 				.split("/")[4]);
 		
-		ResultActions result_put = mock.salvarWallpaper(id, "teste", "teste", 
+		ResultActions resultPut = mock.salvarWallpaper(id, "teste", "teste", 
 				"https://wallpaperaccess.com/full/2029165.jpg", "paisagem", tokenUser);
-		result_put.andExpect(MockMvcResultMatchers
+		resultPut.andExpect(MockMvcResultMatchers
 				.status()
 				.isOk());
 	}
@@ -98,19 +98,34 @@ public class WallpapersControllerTest {
 				.getHeader("Location")
 				.split("/")[4]);
 		
-		ResultActions result = mock.performarDelete(new URI("/wpps/2"), tokenUser);
-		result.andExpect(MockMvcResultMatchers
+		ResultActions resultUsuario = mock.performarDelete(new URI("/wpps/2"), tokenUser);
+		resultUsuario.andExpect(MockMvcResultMatchers
 				.status()
 				.isForbidden());
 		
-		ResultActions result_delete = mock.performarDelete(new URI("/wpps/1"), tokenUser);
-		result_delete.andExpect(MockMvcResultMatchers
+		ResultActions resultDel = mock.performarDelete(new URI("/wpps/1"), tokenUser);
+		resultDel.andExpect(MockMvcResultMatchers
 				.status()
 				.isOk());
 		
-		ResultActions result_mod = mock.performarDelete(new URI("/wpps/" + id), tokenMod);
-		result_mod.andExpect(MockMvcResultMatchers
+		ResultActions resultMod = mock.performarDelete(new URI("/wpps/" + id), tokenMod);
+		resultMod.andExpect(MockMvcResultMatchers
 				.status()
 				.isOk());
+	}
+	
+	@Test
+	public void dadosDoFormularioDeSalvarWallpaperDevemSerValidos() throws Exception {
+		ResultActions resultNomeInvalido = this.mock.salvarWallpaper(null, "", "", 
+				"https://wallpaperaccess.com/full/2029165.jpg", "paisagem", tokenUser);
+		resultNomeInvalido.andExpect(MockMvcResultMatchers.status().isBadRequest());
+		
+		ResultActions resultUrlInvalido = this.mock.salvarWallpaper(null, "nome valido", "", 
+				"linkinvalido", "paisagem", tokenUser);
+		resultUrlInvalido.andExpect(MockMvcResultMatchers.status().isBadRequest());
+		
+		ResultActions resultCategoriaInvalida = this.mock.salvarWallpaper(null, "nome valido", "", 
+				"https://wallpaperaccess.com/full/2029165.jpg", "categoria que nao existe", tokenUser);
+		resultCategoriaInvalida.andExpect(MockMvcResultMatchers.status().isBadRequest());
 	}
 }

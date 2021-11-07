@@ -22,10 +22,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	
 	@Autowired
 	private AutenticacaoService autenticacaoService;
-	
 	@Autowired
 	private TokenService tokenService;
-	
 	@Autowired
 	private UsuarioRepository usuarioRepository;
 	
@@ -49,6 +47,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		.antMatchers(HttpMethod.POST, "/auth/login").permitAll()
 		.antMatchers(HttpMethod.GET, "/wpps").permitAll()
 		.antMatchers(HttpMethod.GET, "/wpps/*").permitAll()
+		.antMatchers(HttpMethod.GET, "/categorias").permitAll()
+		.antMatchers(HttpMethod.GET, "/categorias/*").permitAll()
+		.antMatchers("/categorias").hasRole("MODERADOR")
+		.antMatchers("/categorias/*").hasRole("MODERADOR")
 		.anyRequest().authenticated()
 		.and().csrf().disable()
 		.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
