@@ -31,7 +31,6 @@ import br.com.simplewpps.api.controller.dto.DetailedWallpaperDto;
 import br.com.simplewpps.api.controller.dto.WallpaperDto;
 import br.com.simplewpps.api.controller.form.SalvarWallpaperForm;
 import br.com.simplewpps.api.model.Categoria;
-import br.com.simplewpps.api.model.TipoPerfil;
 import br.com.simplewpps.api.model.Usuario;
 import br.com.simplewpps.api.model.Wallpaper;
 import br.com.simplewpps.api.repository.CategoriaRepository;
@@ -102,10 +101,9 @@ public class WallpaperController {
 		Optional<Wallpaper> opt = this.wppRepository.findById(id);
 		if (opt.isEmpty()) return ResponseEntity.notFound().build();		
 		Wallpaper wpp = opt.get();
-		TipoPerfil moderador = this.perfilRepository.findByNome("ROLE_MODERADOR").get();
 		
 		if (this.tokenService.usuarioEhDono(request, userRepository, wpp) ||
-				this.tokenService.getUsuario(request, userRepository).getAuthorities().contains(moderador)) {
+				this.tokenService.usuarioEhModerador(request, userRepository, perfilRepository)) {
 			wpp.setDescricao(form.getDescricao());
 			wpp.setTitulo(form.getTitulo());
 			wpp.setUrl(form.getUrl());
@@ -124,14 +122,12 @@ public class WallpaperController {
 	@DeleteMapping("/{id}")
 	@Transactional
 	public ResponseEntity<?> deletarWpp(@PathVariable Long id, HttpServletRequest request) {
-		TipoPerfil moderador = this.perfilRepository.findByNome("ROLE_MODERADOR").get();
-		
 		Optional<Wallpaper> opt = this.wppRepository.findById(id);
 		if (opt.isEmpty()) return ResponseEntity.notFound().build();
 		Wallpaper wpp = opt.get();
 		
 		if (this.tokenService.usuarioEhDono(request, userRepository, wpp) || 
-				this.tokenService.getUsuario(request, userRepository).getAuthorities().contains(moderador)) {
+				this.tokenService.usuarioEhModerador(request, userRepository, perfilRepository)) {
 						
 			this.wppRepository.delete(wpp);
 			return ResponseEntity.ok().build();

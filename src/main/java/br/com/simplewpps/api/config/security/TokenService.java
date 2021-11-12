@@ -9,8 +9,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
+import br.com.simplewpps.api.model.TipoPerfil;
 import br.com.simplewpps.api.model.Usuario;
 import br.com.simplewpps.api.model.Wallpaper;
+import br.com.simplewpps.api.repository.TipoPerfilRepository;
 import br.com.simplewpps.api.repository.UsuarioRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -76,6 +78,15 @@ public class TokenService {
 		} else {
 			return false;
 		}
+	}
+	
+	public boolean usuarioEhModerador(HttpServletRequest request, UsuarioRepository repository, 
+			TipoPerfilRepository perfilRepository) {
+		Usuario user = this.getUsuario(request, repository);
+		TipoPerfil moderador = perfilRepository.findByNome("ROLE_MODERADOR").get();
+		if (user == null) return false;
+		
+		return user.getAuthorities().contains(moderador);
 	}
 	
 }

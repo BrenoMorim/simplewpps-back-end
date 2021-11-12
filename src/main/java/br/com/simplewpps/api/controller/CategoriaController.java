@@ -35,10 +35,8 @@ public class CategoriaController {
 	
 	@GetMapping
 	public Page<CategoriaDto> listarCategorias(@PageableDefault(page = 0, size = 10) Pageable paginacao) {
-		
-			Page<Categoria> categorias = catRepository.findAll(paginacao);
-			return CategoriaDto.converter(categorias);
-			
+		Page<Categoria> categorias = catRepository.findAll(paginacao);
+		return CategoriaDto.converter(categorias);
 	}
 	
 	@GetMapping("/{nome}")
