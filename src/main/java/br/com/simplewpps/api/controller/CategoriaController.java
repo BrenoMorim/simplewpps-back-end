@@ -7,6 +7,8 @@ import javax.transaction.Transactional;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -34,6 +36,7 @@ public class CategoriaController {
 	private CategoriaRepository catRepository;
 	
 	@GetMapping
+	@Cacheable(value = "listaDeCategorias")
 	public Page<CategoriaDto> listarCategorias(@PageableDefault(page = 0, size = 10) Pageable paginacao) {
 		Page<Categoria> categorias = catRepository.findAll(paginacao);
 		return CategoriaDto.converter(categorias);
@@ -49,6 +52,7 @@ public class CategoriaController {
 	
 	@PostMapping
 	@Transactional
+	@CacheEvict(value = "listaDeCategorias", allEntries = true)
 	public ResponseEntity<?> criarCategoria(@RequestBody @Valid SalvarCategoriaForm form,
 													UriComponentsBuilder uriBuilder) {
 		if (this.catRepository.findByNome(form.getNome()).isPresent()) {			
@@ -65,6 +69,7 @@ public class CategoriaController {
 	
 	@PutMapping("/{id}")
 	@Transactional
+	@CacheEvict(value = "listaDeTopicos", allEntries = true)
 	public ResponseEntity<?> alterarCategoria(@PathVariable Long id, @RequestBody @Valid SalvarCategoriaForm form,
 													UriComponentsBuilder uriBuilder) {
 		if (this.catRepository.findByNome(form.getNome()).isPresent()) 			
@@ -83,6 +88,7 @@ public class CategoriaController {
 	
 	@DeleteMapping("/{id}")
 	@Transactional
+	@CacheEvict(value = "listaDeCategorias", allEntries = true)
 	public ResponseEntity<?> deletarCategoria(@PathVariable Long id) {
 		Optional<Categoria> opt = this.catRepository.findById(id);
 		if (opt.isEmpty()) return ResponseEntity.notFound().build();
