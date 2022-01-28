@@ -134,4 +134,18 @@ public class WallpaperController {
 		}
 		return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
 	}
+	
+	@GetMapping("/curtir/{id}")
+	@Transactional
+	public ResponseEntity<?> curtirWallpaper(@PathVariable Long id, HttpServletRequest request) {
+		Optional<Wallpaper> opt = this.wppRepository.findById(id);
+		if (opt.isEmpty()) return ResponseEntity.notFound().build();
+		Wallpaper wpp = opt.get();
+		
+		Usuario user = this.tokenService.getUsuario(request, this.userRepository);
+		if (user == null) return ResponseEntity.badRequest().body("Usuário nulo!");
+		
+		user.curtirWallpaper(wpp);
+		return ResponseEntity.ok().build();
+	}
 }

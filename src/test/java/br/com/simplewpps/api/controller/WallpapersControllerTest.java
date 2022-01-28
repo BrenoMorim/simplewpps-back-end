@@ -1,5 +1,7 @@
 package br.com.simplewpps.api.controller;
 
+import static org.junit.Assert.assertEquals;
+
 import java.net.URI;
 
 import org.junit.jupiter.api.BeforeAll;
@@ -16,6 +18,8 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import br.com.simplewpps.api.SimplewppsApplication;
+import br.com.simplewpps.api.model.Usuario;
+import br.com.simplewpps.api.repository.UsuarioRepository;
 import br.com.simplewpps.api.service.MockMvcService;
 
 @RunWith(SpringRunner.class)
@@ -29,6 +33,8 @@ public class WallpapersControllerTest {
 	private MockMvcService mock;
 	private String tokenUser;
 	private String tokenMod;
+	@Autowired
+	private UsuarioRepository usuarioRepository;
 	
 	@BeforeAll
 	public void executarLoginMod() throws Exception {
@@ -74,12 +80,7 @@ public class WallpapersControllerTest {
 	@Test
 	public void deveAlterarWallpaperSeUsuarioLogadoForAutor() throws Exception {
 		
-		Long id = Long.valueOf(this.mock.salvarWallpaper(null, "wpp legal", "wpp legal", 
-				"https://wallpaperaccess.com/full/2029165.jpg", "paisagem", tokenUser)
-				.andReturn()
-				.getResponse()
-				.getHeader("Location")
-				.split("/")[4]);
+		Long id = this.mock.criarWallpaperQualquerERetornarId(tokenUser);
 		
 		ResultActions resultPut = mock.salvarWallpaper(id, "teste", "teste", 
 				"https://wallpaperaccess.com/full/2029165.jpg", "paisagem", tokenUser);
@@ -91,25 +92,20 @@ public class WallpapersControllerTest {
 	@Test
 	public void somenteAutorOuModeradorPodemDeletarOWallpaper() throws Exception {
 		
-		Long id = Long.valueOf(this.mock.salvarWallpaper(null, "wpp legal", "wpp legal", 
-				"https://wallpaperaccess.com/full/2029165.jpg", "paisagem", tokenUser)
-				.andReturn()
-				.getResponse()
-				.getHeader("Location")
-				.split("/")[4]);
+		Long id = this.mock.criarWallpaperQualquerERetornarId(tokenUser);
 		
-		ResultActions resultUsuario = mock.performarDelete(new URI("/wpps/2"), tokenUser);
-		resultUsuario.andExpect(MockMvcResultMatchers
+		ResultActions resultDelUsuario = mock.performarDelete(new URI("/wpps/2"), tokenUser);
+		resultDelUsuario.andExpect(MockMvcResultMatchers
 				.status()
 				.isForbidden());
 		
-		ResultActions resultDel = mock.performarDelete(new URI("/wpps/1"), tokenUser);
-		resultDel.andExpect(MockMvcResultMatchers
+		ResultActions resultDelAutor = mock.performarDelete(new URI("/wpps/1"), tokenUser);
+		resultDelAutor.andExpect(MockMvcResultMatchers
 				.status()
 				.isOk());
 		
-		ResultActions resultMod = mock.performarDelete(new URI("/wpps/" + id), tokenMod);
-		resultMod.andExpect(MockMvcResultMatchers
+		ResultActions resultDelMod = mock.performarDelete(new URI("/wpps/" + id), tokenMod);
+		resultDelMod.andExpect(MockMvcResultMatchers
 				.status()
 				.isOk());
 	}
@@ -127,5 +123,18 @@ public class WallpapersControllerTest {
 		ResultActions resultCategoriaInvalida = this.mock.salvarWallpaper(null, "nome valido", "", 
 				"https://wallpaperaccess.com/full/2029165.jpg", "categoria que nao existe", tokenUser);
 		resultCategoriaInvalida.andExpect(MockMvcResultMatchers.status().isBadRequest());
+	}
+	
+	@Test
+	public void usuarioDeveConseguirCurtirWallpaper() throws Exception {
+		
+		Long id = this.mock.criarWallpaperQualquerERetornarId(tokenUser);
+		
+		ResultActions result = this.mock.curtirWallpaper(id, tokenUser);
+		result.andExpect(MockMvcResultMatchers.status().isOk());
+		
+		Usuario user = this.usuarioRepository.findByEmail("breno@brenomail.com").get();
+		
+		assertEquals(1, user.getWppsSalvos().size());
 	}
 }

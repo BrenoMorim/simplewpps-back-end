@@ -24,6 +24,14 @@ public class MockMvcService {
 			);
 	}
 	
+	public ResultActions performarGetComToken(URI uri, String token) throws Exception {
+		String autorizacao = String.format("Bearer %s", token.replaceAll("\"", ""));
+		return mock.perform(MockMvcRequestBuilders
+				.get(uri)
+				.header(HttpHeaders.AUTHORIZATION, autorizacao)
+			);
+	}
+	
 	public ResultActions performarPut(URI uri, String json, String token) throws Exception {
 		String autorizacao = String.format("Bearer %s", token.replaceAll("\"", ""));
 		return mock.perform(MockMvcRequestBuilders
@@ -69,7 +77,8 @@ public class MockMvcService {
 				"{\"titulo\": \"%s\","
 			   + "\"url\": \"%s\","
 			   + "\"descricao\": \"%s\","
-			   + "\"categorias\": [\"%s\"]}", titulo, url, descricao, categoria);
+			   + "\"categorias\": [\"%s\"]}", 
+			   titulo, url, descricao, categoria);
 		
 		if(id == null) return this.performarPost(new URI("/wpps"), json, token);
 		return this.performarPut(new URI("/wpps/" + id), json, token);
@@ -79,5 +88,20 @@ public class MockMvcService {
 		
 		if(id == null) return this.performarPost(new URI("/categorias"), json, token);
 		return this.performarPut(new URI("/categorias/" + id), json, token);
+	}
+	
+	public ResultActions curtirWallpaper(Long wppId, String token) throws Exception {
+		
+		return this.performarGetComToken(new URI("/wpps/curtir/" + wppId), token);
+		
+	}
+	
+	public Long criarWallpaperQualquerERetornarId(String token) throws Exception {
+		return Long.valueOf(this.salvarWallpaper(null, "wpp legal", "wpp legal", 
+				"https://wallpaperaccess.com/full/2029165.jpg", "paisagem", token)
+				.andReturn()
+				.getResponse()
+				.getHeader("Location")
+				.split("/")[4]);
 	}
 }

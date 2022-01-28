@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -29,6 +30,9 @@ public class Usuario implements UserDetails {
 	
 	@ManyToMany(fetch = FetchType.EAGER)
 	private Collection<TipoPerfil> perfis = new HashSet<TipoPerfil>();
+	
+	@ManyToMany(fetch = FetchType.EAGER)
+	private Set<Wallpaper> wppsSalvos = new HashSet<Wallpaper>();
 	
 	@Override
 	public int hashCode() {
@@ -61,6 +65,14 @@ public class Usuario implements UserDetails {
 	
 	public void adicionaPerfil(TipoPerfil perfil) {
 		this.perfis.add(perfil);
+	}
+	
+	public void curtirWallpaper(Wallpaper wpp) {
+		this.wppsSalvos.add(wpp);
+	}
+	
+	public Set<Wallpaper> getWppsSalvos() {
+		return Set.copyOf(this.wppsSalvos);
 	}
 	
 	public Long getId() {
