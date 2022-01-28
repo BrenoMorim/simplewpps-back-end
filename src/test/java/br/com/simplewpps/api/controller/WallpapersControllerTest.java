@@ -1,7 +1,5 @@
 package br.com.simplewpps.api.controller;
 
-import static org.junit.Assert.assertEquals;
-
 import java.net.URI;
 
 import org.junit.jupiter.api.BeforeAll;
@@ -18,8 +16,6 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import br.com.simplewpps.api.SimplewppsApplication;
-import br.com.simplewpps.api.model.Usuario;
-import br.com.simplewpps.api.repository.UsuarioRepository;
 import br.com.simplewpps.api.service.MockMvcService;
 
 @RunWith(SpringRunner.class)
@@ -33,8 +29,6 @@ public class WallpapersControllerTest {
 	private MockMvcService mock;
 	private String tokenUser;
 	private String tokenMod;
-	@Autowired
-	private UsuarioRepository usuarioRepository;
 	
 	@BeforeAll
 	public void executarLoginMod() throws Exception {
@@ -126,15 +120,20 @@ public class WallpapersControllerTest {
 	}
 	
 	@Test
-	public void usuarioDeveConseguirCurtirWallpaper() throws Exception {
+	public void usuarioDeveConseguirCurtirEDescurtirWallpaper() throws Exception {
 		
 		Long id = this.mock.criarWallpaperQualquerERetornarId(tokenUser);
 		
-		ResultActions result = this.mock.curtirWallpaper(id, tokenUser);
-		result.andExpect(MockMvcResultMatchers.status().isOk());
+		ResultActions resultCurtir = this.mock.curtirWallpaper(id, tokenUser);
+		resultCurtir.andExpect(MockMvcResultMatchers.status().isOk());
 		
-		Usuario user = this.usuarioRepository.findByEmail("breno@brenomail.com").get();
+		ResultActions wppsSalvos = this.mock.retornarWallpapersSalvos(tokenUser);
+		wppsSalvos.andExpect(MockMvcResultMatchers.content().string("id:" + id));
 		
-		assertEquals(1, user.getWppsSalvos().size());
+		ResultActions resultDescurtir = this.mock.descurtirWallpaper(id, tokenUser);
+		resultDescurtir.andExpect(MockMvcResultMatchers.status().isOk());
+	
+		wppsSalvos = this.mock.retornarWallpapersSalvos(tokenUser);
+		wppsSalvos.andExpect(MockMvcResultMatchers.content().string("[]"));
 	}
 }

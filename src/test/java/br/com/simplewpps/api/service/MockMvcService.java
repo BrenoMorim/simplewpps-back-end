@@ -96,6 +96,18 @@ public class MockMvcService {
 		
 	}
 	
+	public ResultActions descurtirWallpaper(Long wppId, String token) throws Exception {
+		
+		return this.performarGetComToken(new URI("/wpps/descurtir/" + wppId), token);
+		
+	}
+	
+	public ResultActions retornarWallpapersSalvos(String token) throws Exception {
+		
+		return this.performarGetComToken(new URI("/wpps/salvos"), token);
+		
+	}
+	
 	public Long criarWallpaperQualquerERetornarId(String token) throws Exception {
 		return Long.valueOf(this.salvarWallpaper(null, "wpp legal", "wpp legal", 
 				"https://wallpaperaccess.com/full/2029165.jpg", "paisagem", token)

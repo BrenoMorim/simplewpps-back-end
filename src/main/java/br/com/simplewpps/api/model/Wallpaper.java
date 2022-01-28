@@ -94,9 +94,7 @@ public class Wallpaper {
 		if (getClass() != obj.getClass())
 			return false;
 		Wallpaper other = (Wallpaper) obj;
-		return Objects.equals(autor, other.autor) && Objects.equals(descricao, other.descricao)
-				&& Objects.equals(id, other.id) && Objects.equals(titulo, other.titulo)
-				&& Objects.equals(url, other.url);
+		return other.getId() == this.getId();
 	}
 	
 }

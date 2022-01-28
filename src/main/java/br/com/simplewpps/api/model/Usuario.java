@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -31,7 +32,7 @@ public class Usuario implements UserDetails {
 	@ManyToMany(fetch = FetchType.EAGER)
 	private Collection<TipoPerfil> perfis = new HashSet<TipoPerfil>();
 	
-	@ManyToMany(fetch = FetchType.EAGER)
+	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	private Set<Wallpaper> wppsSalvos = new HashSet<Wallpaper>();
 	
 	@Override
@@ -67,12 +68,16 @@ public class Usuario implements UserDetails {
 		this.perfis.add(perfil);
 	}
 	
+	public Set<Wallpaper> getWppsSalvos() {
+		return Set.copyOf(this.wppsSalvos);
+	}
+	
 	public void curtirWallpaper(Wallpaper wpp) {
 		this.wppsSalvos.add(wpp);
 	}
 	
-	public Set<Wallpaper> getWppsSalvos() {
-		return Set.copyOf(this.wppsSalvos);
+	public void descurtirWallpaper(Wallpaper wpp) {
+		this.wppsSalvos.remove(wpp);
 	}
 	
 	public Long getId() {

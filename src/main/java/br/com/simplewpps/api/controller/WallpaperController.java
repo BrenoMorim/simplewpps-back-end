@@ -2,6 +2,7 @@ package br.com.simplewpps.api.controller;
 
 import java.net.URI;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
@@ -148,4 +149,30 @@ public class WallpaperController {
 		user.curtirWallpaper(wpp);
 		return ResponseEntity.ok().build();
 	}
+	
+	@GetMapping("/descurtir/{id}")
+	@Transactional
+	public ResponseEntity<?> descurtirWallpaper(@PathVariable Long id, HttpServletRequest request) {
+		Optional<Wallpaper> opt = this.wppRepository.findById(id);
+		if (opt.isEmpty()) return ResponseEntity.notFound().build();
+		Wallpaper wpp = opt.get();
+		
+		Usuario user = this.tokenService.getUsuario(request, this.userRepository);
+		if (user == null) return ResponseEntity.badRequest().body("Usuário nulo!");
+		
+		user.descurtirWallpaper(wpp);
+		return ResponseEntity.ok().build();
+	}
+	
+	@GetMapping("/salvos")
+	public ResponseEntity<?> listarWallpapersSalvos(HttpServletRequest request) {
+				
+		Usuario user = this.tokenService.getUsuario(request, this.userRepository);
+		if (user == null) return null;
+		
+		List<WallpaperDto> wppsSalvos = user.getWppsSalvos().stream().map(WallpaperDto::new).toList();
+		
+		return ResponseEntity.ok().body(wppsSalvos);
+	}
+	
 }
