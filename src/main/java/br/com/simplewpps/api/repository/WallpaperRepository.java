@@ -10,4 +10,7 @@ public interface WallpaperRepository extends JpaRepository<Wallpaper, Long> {
 
 	public Page<Wallpaper> findByTitulo(String titulo, Pageable paginacao);
 	
+	public Page<Wallpaper> findByTituloAndCategoriasNome(String titulo, String categoriaNome, Pageable paginacao);
+	
+	public Page<Wallpaper> findByCategoriasNome(String categoriaNome, Pageable paginacao);
 }

@@ -1,5 +1,7 @@
 package br.com.simplewpps.api.controller;
 
+import static org.junit.Assert.assertTrue;
+
 import java.net.URI;
 
 import org.junit.jupiter.api.BeforeAll;
@@ -128,12 +130,12 @@ public class WallpapersControllerTest {
 		resultCurtir.andExpect(MockMvcResultMatchers.status().isOk());
 		
 		ResultActions wppsSalvos = this.mock.retornarWallpapersSalvos(tokenUser);
-		wppsSalvos.andExpect(MockMvcResultMatchers.content().string("id:" + id));
+		assertTrue(wppsSalvos.andReturn().getResponse().getContentAsString().contains("\"id\":"+id));
 		
 		ResultActions resultDescurtir = this.mock.descurtirWallpaper(id, tokenUser);
 		resultDescurtir.andExpect(MockMvcResultMatchers.status().isOk());
 	
 		wppsSalvos = this.mock.retornarWallpapersSalvos(tokenUser);
-		wppsSalvos.andExpect(MockMvcResultMatchers.content().string("[]"));
+		assertTrue(wppsSalvos.andReturn().getResponse().getContentAsString().contains("\"content\":[]"));
 	}
 }

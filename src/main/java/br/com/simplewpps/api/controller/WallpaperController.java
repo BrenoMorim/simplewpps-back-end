@@ -2,7 +2,6 @@ package br.com.simplewpps.api.controller;
 
 import java.net.URI;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
@@ -55,14 +54,21 @@ public class WallpaperController {
 	private TipoPerfilRepository perfilRepository;
 	
 	@GetMapping
-	public Page<WallpaperDto> listarWpps(@RequestParam(required = false) String titulo, 
+	public Page<WallpaperDto> listarWpps(@RequestParam(required = false) String titulo,
+			@RequestParam(required = false) String categoriaNome,
 			@PageableDefault(sort = "dataCriacao", direction = Direction.DESC, page = 0, size = 10) Pageable paginacao) {
 		
-		if (titulo == null) {
+		if (titulo == null && categoriaNome == null) {
 			Page<Wallpaper> wpps = wppRepository.findAll(paginacao);
 			return WallpaperDto.converter(wpps);
-		} else {
+		} else if (titulo != null && categoriaNome == null) {
 			Page<Wallpaper> wpps = wppRepository.findByTitulo(titulo, paginacao);
+			return WallpaperDto.converter(wpps);
+		} else if (titulo == null && categoriaNome != null) {
+			Page<Wallpaper> wpps = wppRepository.findByCategoriasNome(categoriaNome, paginacao);
+			return WallpaperDto.converter(wpps);
+		} else {
+			Page<Wallpaper> wpps = wppRepository.findByTituloAndCategoriasNome(titulo, categoriaNome, paginacao);
 			return WallpaperDto.converter(wpps);
 		}
 	}
@@ -165,14 +171,14 @@ public class WallpaperController {
 	}
 	
 	@GetMapping("/salvos")
-	public ResponseEntity<?> listarWallpapersSalvos(HttpServletRequest request) {
-				
+	public Page<WallpaperDto> listarWallpapersSalvos(@PageableDefault(direction = Direction.DESC, page = 0, size = 10) Pageable paginacao, HttpServletRequest request) {
+			
 		Usuario user = this.tokenService.getUsuario(request, this.userRepository);
 		if (user == null) return null;
 		
-		List<WallpaperDto> wppsSalvos = user.getWppsSalvos().stream().map(WallpaperDto::new).toList();
+		Page<Wallpaper> wpps = userRepository.getWallpapersSalvos(user.getId(), paginacao);
+		return WallpaperDto.converter(wpps);
 		
-		return ResponseEntity.ok().body(wppsSalvos);
 	}
 	
 }
