@@ -111,7 +111,6 @@ public class WallpaperController {
 		
 		if (this.tokenService.usuarioEhDono(request, userRepository, wpp) ||
 				this.tokenService.usuarioEhModerador(request, userRepository, perfilRepository)) {
-			wpp.setDescricao(form.getDescricao());
 			wpp.setTitulo(form.getTitulo());
 			wpp.setUrl(form.getUrl());
 			wpp.resetarCategorias();
@@ -180,5 +179,4 @@ public class WallpaperController {
 		return WallpaperDto.converter(wpps);
 		
 	}
-	
 }

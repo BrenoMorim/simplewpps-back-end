@@ -71,14 +71,13 @@ public class MockMvcService {
 
 		return this.performarPost(new URI("/auth/register"), json, "");
 	}
-	public ResultActions salvarWallpaper(Long id, String titulo, String descricao, String url, 
+	public ResultActions salvarWallpaper(Long id, String titulo, String url, 
 										String categoria, String token) throws Exception {
 		String json = String.format(
 				"{\"titulo\": \"%s\","
 			   + "\"url\": \"%s\","
-			   + "\"descricao\": \"%s\","
 			   + "\"categorias\": [\"%s\"]}", 
-			   titulo, url, descricao, categoria);
+			   titulo, url, categoria);
 		
 		if(id == null) return this.performarPost(new URI("/wpps"), json, token);
 		return this.performarPut(new URI("/wpps/" + id), json, token);
@@ -109,7 +108,7 @@ public class MockMvcService {
 	}
 	
 	public Long criarWallpaperQualquerERetornarId(String token) throws Exception {
-		return Long.valueOf(this.salvarWallpaper(null, "wpp legal", "wpp legal", 
+		return Long.valueOf(this.salvarWallpaper(null, "wpp legal", 
 				"https://wallpaperaccess.com/full/2029165.jpg", "paisagem", token)
 				.andReturn()
 				.getResponse()

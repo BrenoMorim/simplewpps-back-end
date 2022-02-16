@@ -19,8 +19,6 @@ public class SalvarWallpaperForm {
 	private String titulo;
 	@NotNull @NotEmpty @URL
 	private String url;
-	@NotNull @Size(min=0, max=100)
-	private String descricao;
 	@NotNull
 	private List<String> categorias;
 	
@@ -29,9 +27,6 @@ public class SalvarWallpaperForm {
 	}
 	public String getUrl() {
 		return url;
-	}
-	public String getDescricao() {
-		return descricao;
 	}
 	public List<String> getCategorias() {
 		return this.categorias;
@@ -53,7 +48,6 @@ public class SalvarWallpaperForm {
 	public Wallpaper converter() {
 		Wallpaper wpp = new Wallpaper();
 		wpp.setTitulo(titulo);
-		wpp.setDescricao(descricao);
 		wpp.setUrl(url);
 		return wpp;
 	}

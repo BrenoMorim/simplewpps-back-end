@@ -10,7 +10,6 @@ public class DetailedWallpaperDto {
 
 	private Long id;
 	private String titulo;
-	private String descricao;
 	private HashSet<CategoriaDto> categorias = new HashSet<CategoriaDto>();
 	private LocalDateTime dataCriacao;
 	private String nomeAutor;
@@ -18,7 +17,6 @@ public class DetailedWallpaperDto {
 	public DetailedWallpaperDto(Wallpaper wpp) {
 		this.id = wpp.getId();
 		this.titulo = wpp.getTitulo();
-		this.descricao = wpp.getDescricao();
 		this.nomeAutor = wpp.getAutor().getNickname();
 		this.dataCriacao = wpp.getDataCriacao();
 		this.categorias.addAll(wpp.getCategorias().stream().map(CategoriaDto::new).collect(Collectors.toSet()));
@@ -30,10 +28,6 @@ public class DetailedWallpaperDto {
 
 	public String getTitulo() {
 		return titulo;
-	}
-
-	public String getDescricao() {
-		return descricao;
 	}
 
 	public HashSet<CategoriaDto> getCategorias() {

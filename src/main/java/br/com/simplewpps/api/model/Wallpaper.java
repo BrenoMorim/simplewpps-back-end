@@ -19,7 +19,6 @@ public class Wallpaper {
 	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	private String titulo;
-	private String descricao;
 	private String url;
 	private LocalDateTime dataCriacao = LocalDateTime.now();
 	@ManyToOne()
@@ -33,14 +32,6 @@ public class Wallpaper {
 
 	public void setTitulo(String titulo) {
 		this.titulo = titulo;
-	}
-
-	public String getDescricao() {
-		return descricao;
-	}
-
-	public void setDescricao(String descricao) {
-		this.descricao = descricao;
 	}
 
 	public String getUrl() {
@@ -82,7 +73,7 @@ public class Wallpaper {
 	
 	@Override
 	public int hashCode() {
-		return Objects.hash(autor, descricao, id, titulo, url);
+		return Objects.hash(autor, id, titulo, url);
 	}
 
 	@Override

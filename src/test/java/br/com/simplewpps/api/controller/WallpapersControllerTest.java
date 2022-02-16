@@ -1,5 +1,6 @@
 package br.com.simplewpps.api.controller;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.net.URI;
@@ -15,9 +16,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import br.com.simplewpps.api.SimplewppsApplication;
+import br.com.simplewpps.api.service.DadosRespostaService;
 import br.com.simplewpps.api.service.MockMvcService;
 
 @RunWith(SpringRunner.class)
@@ -29,48 +30,36 @@ public class WallpapersControllerTest {
 
 	@Autowired
 	private MockMvcService mock;
+	@Autowired
+	private DadosRespostaService service;
 	private String tokenUser;
 	private String tokenMod;
 	
 	@BeforeAll
 	public void executarLoginMod() throws Exception {
-		String content = mock.efetuarLogin("mod@modmail.com", "1234567")
-				.andReturn()
-				.getResponse()
-				.getContentAsString();
-		this.tokenMod = content.substring(content.indexOf(":") + 1, content.indexOf(","));
+		this.tokenMod = service.getToken("mod@modmail.com", "1234567");
 	}
 	
 	@BeforeAll
 	public void executarLoginUsuario() throws Exception {
-		String content = mock.efetuarLogin("breno@brenomail.com", "1234567")
-				.andReturn()
-				.getResponse()
-				.getContentAsString();
-		this.tokenUser = content.substring(content.indexOf(":") + 1, content.indexOf(","));
+		this.tokenUser = service.getToken("breno@brenomail.com", "1234567");
 	}
 	
 	@Test
 	public void naoPermiteAlteracoesSeOUsuarioNaoEstiverLogado() throws Exception {
 		ResultActions resultDel = mock.performarDelete(new URI("/wpps/1"), "");
-		resultDel.andExpect(MockMvcResultMatchers
-				.status()
-				.isForbidden());
+		assertEquals(Integer.valueOf(403), service.getStatus(resultDel));
 		
-		ResultActions resultPut = mock.salvarWallpaper(Long.parseLong("1"), "titulo", "descr", "url", "cat", "");
-		resultPut.andExpect(MockMvcResultMatchers
-				.status()
-				.isForbidden());
+		ResultActions resultPut = mock.salvarWallpaper(Long.parseLong("1"), "titulo", "url", "cat", "");
+		assertEquals(Integer.valueOf(403), service.getStatus(resultPut));
 	}
 	
 	@Test
 	public void deveCriarWallpaperQuandoUsuarioEstiverLogado() throws Exception {
 		
-		ResultActions result_post = mock.salvarWallpaper(null, "wpp legal", "wpp legal", 
+		ResultActions resultPost = mock.salvarWallpaper(null, "wpp legal",
 				"https://wallpaperaccess.com/full/2029165.jpg", "paisagem", tokenUser);
-		result_post.andExpect(MockMvcResultMatchers
-				.status()
-				.isCreated());
+		assertEquals(Integer.valueOf(201), service.getStatus(resultPost));
 	}
 	
 	@Test
@@ -78,11 +67,9 @@ public class WallpapersControllerTest {
 		
 		Long id = this.mock.criarWallpaperQualquerERetornarId(tokenUser);
 		
-		ResultActions resultPut = mock.salvarWallpaper(id, "teste", "teste", 
+		ResultActions resultPut = mock.salvarWallpaper(id, "teste", 
 				"https://wallpaperaccess.com/full/2029165.jpg", "paisagem", tokenUser);
-		resultPut.andExpect(MockMvcResultMatchers
-				.status()
-				.isOk());
+		assertEquals(Integer.valueOf(200), service.getStatus(resultPut));
 	}
 	
 	@Test
@@ -91,34 +78,28 @@ public class WallpapersControllerTest {
 		Long id = this.mock.criarWallpaperQualquerERetornarId(tokenUser);
 		
 		ResultActions resultDelUsuario = mock.performarDelete(new URI("/wpps/2"), tokenUser);
-		resultDelUsuario.andExpect(MockMvcResultMatchers
-				.status()
-				.isForbidden());
+		assertEquals(Integer.valueOf(403), service.getStatus(resultDelUsuario));
 		
 		ResultActions resultDelAutor = mock.performarDelete(new URI("/wpps/1"), tokenUser);
-		resultDelAutor.andExpect(MockMvcResultMatchers
-				.status()
-				.isOk());
+		assertEquals(Integer.valueOf(200), service.getStatus(resultDelAutor));
 		
 		ResultActions resultDelMod = mock.performarDelete(new URI("/wpps/" + id), tokenMod);
-		resultDelMod.andExpect(MockMvcResultMatchers
-				.status()
-				.isOk());
+		assertEquals(Integer.valueOf(200), service.getStatus(resultDelMod));
 	}
 	
 	@Test
 	public void dadosDoFormularioDeSalvarWallpaperDevemSerValidos() throws Exception {
-		ResultActions resultNomeInvalido = this.mock.salvarWallpaper(null, "", "", 
+		ResultActions resultNomeInvalido = this.mock.salvarWallpaper(null, "", 
 				"https://wallpaperaccess.com/full/2029165.jpg", "paisagem", tokenUser);
-		resultNomeInvalido.andExpect(MockMvcResultMatchers.status().isBadRequest());
+		assertEquals(Integer.valueOf(400), service.getStatus(resultNomeInvalido));
 		
-		ResultActions resultUrlInvalido = this.mock.salvarWallpaper(null, "nome valido", "", 
+		ResultActions resultUrlInvalido = this.mock.salvarWallpaper(null, "nome valido", 
 				"linkinvalido", "paisagem", tokenUser);
-		resultUrlInvalido.andExpect(MockMvcResultMatchers.status().isBadRequest());
+		assertEquals(Integer.valueOf(400), service.getStatus(resultUrlInvalido));
 		
-		ResultActions resultCategoriaInvalida = this.mock.salvarWallpaper(null, "nome valido", "", 
+		ResultActions resultCategoriaInvalida = this.mock.salvarWallpaper(null, "nome valido", 
 				"https://wallpaperaccess.com/full/2029165.jpg", "categoria que nao existe", tokenUser);
-		resultCategoriaInvalida.andExpect(MockMvcResultMatchers.status().isBadRequest());
+		assertEquals(Integer.valueOf(400), service.getStatus(resultCategoriaInvalida));	
 	}
 	
 	@Test
@@ -127,15 +108,15 @@ public class WallpapersControllerTest {
 		Long id = this.mock.criarWallpaperQualquerERetornarId(tokenUser);
 		
 		ResultActions resultCurtir = this.mock.curtirWallpaper(id, tokenUser);
-		resultCurtir.andExpect(MockMvcResultMatchers.status().isOk());
+		assertEquals(Integer.valueOf(200), service.getStatus(resultCurtir));
 		
 		ResultActions wppsSalvos = this.mock.retornarWallpapersSalvos(tokenUser);
-		assertTrue(wppsSalvos.andReturn().getResponse().getContentAsString().contains("\"id\":"+id));
+		assertTrue(service.verificaSeCorpoContemJson(wppsSalvos, "id", id.toString()));
 		
 		ResultActions resultDescurtir = this.mock.descurtirWallpaper(id, tokenUser);
-		resultDescurtir.andExpect(MockMvcResultMatchers.status().isOk());
-	
+		assertEquals(Integer.valueOf(200), service.getStatus(resultDescurtir));
+		
 		wppsSalvos = this.mock.retornarWallpapersSalvos(tokenUser);
-		assertTrue(wppsSalvos.andReturn().getResponse().getContentAsString().contains("\"content\":[]"));
+		assertTrue(service.verificaSeCorpoContemJson(wppsSalvos, "content", "[]"));
 	}
 }
