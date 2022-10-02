@@ -26,7 +26,7 @@ import br.com.simplewpps.api.service.MockMvcService;
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
 @TestInstance(Lifecycle.PER_CLASS)
-public class WallpapersControllerTest {
+public class WallpaperControllerTest {
 
 	@Autowired
 	private MockMvcService mock;

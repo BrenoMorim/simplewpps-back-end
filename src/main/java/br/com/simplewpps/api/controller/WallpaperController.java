@@ -1,9 +1,8 @@
 package br.com.simplewpps.api.controller;
 
 import java.net.URI;
-import java.util.HashSet;
-import java.util.Optional;
 
+import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
@@ -15,6 +14,8 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,157 +27,104 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import br.com.simplewpps.api.config.security.TokenService;
 import br.com.simplewpps.api.controller.dto.DetailedWallpaperDto;
 import br.com.simplewpps.api.controller.dto.WallpaperDto;
 import br.com.simplewpps.api.controller.form.SalvarWallpaperForm;
-import br.com.simplewpps.api.model.Categoria;
-import br.com.simplewpps.api.model.Usuario;
-import br.com.simplewpps.api.model.Wallpaper;
-import br.com.simplewpps.api.repository.CategoriaRepository;
-import br.com.simplewpps.api.repository.TipoPerfilRepository;
-import br.com.simplewpps.api.repository.UsuarioRepository;
-import br.com.simplewpps.api.repository.WallpaperRepository;
+import br.com.simplewpps.api.service.WallpaperService;
 
 @RestController
 @RequestMapping("/wpps")
 public class WallpaperController {
 	
 	@Autowired
-	private TokenService tokenService;
-	@Autowired 
-	private CategoriaRepository catRepository;
-	@Autowired
-	private UsuarioRepository userRepository;
-	@Autowired
-	private WallpaperRepository wppRepository;
-	@Autowired 
-	private TipoPerfilRepository perfilRepository;
+	private WallpaperService service;
 	
 	@GetMapping
 	public Page<WallpaperDto> listarWpps(@RequestParam(required = false) String titulo,
 			@RequestParam(required = false) String categoriaNome,
 			@PageableDefault(sort = "dataCriacao", direction = Direction.DESC, page = 0, size = 10) Pageable paginacao) {
 		
-		if (titulo == null && categoriaNome == null) {
-			Page<Wallpaper> wpps = wppRepository.findAll(paginacao);
-			return WallpaperDto.converter(wpps);
-		} else if (titulo != null && categoriaNome == null) {
-			Page<Wallpaper> wpps = wppRepository.findByTitulo(titulo, paginacao);
-			return WallpaperDto.converter(wpps);
-		} else if (titulo == null && categoriaNome != null) {
-			Page<Wallpaper> wpps = wppRepository.findByCategoriasNome(categoriaNome, paginacao);
-			return WallpaperDto.converter(wpps);
-		} else {
-			Page<Wallpaper> wpps = wppRepository.findByTituloAndCategoriasNome(titulo, categoriaNome, paginacao);
-			return WallpaperDto.converter(wpps);
-		}
+		return service.buscarWallpapers(titulo, categoriaNome, paginacao);
 	}
 	
 	@GetMapping("/{id}")
-	public ResponseEntity<DetailedWallpaperDto> detalharWalpaper(@PathVariable Long id) {
-		Optional<Wallpaper> opt = this.wppRepository.findById(id);
-		if (opt.isPresent()) {
-			return ResponseEntity.ok(new DetailedWallpaperDto(opt.get()));
-		} else {
+	public ResponseEntity<DetailedWallpaperDto> detalharWallpaper(@PathVariable Long id) {
+		try {
+			return ResponseEntity.ok(service.buscarWallpaperPorId(id));
+		} catch(EntityNotFoundException e) {
 			return ResponseEntity.notFound().build();
 		}
+		
 	}
 	
 	@PostMapping()
-	@Transactional
 	public ResponseEntity<?> salvarWallpaper(@Valid @RequestBody SalvarWallpaperForm form, HttpServletRequest request, UriComponentsBuilder uriBuilder) {
-		
-		HashSet<Categoria> categorias = form.getCategoriasBanco(catRepository);
-		if (categorias == null) return ResponseEntity.badRequest().body("Categorias inválidas, um wallpaper deve ter entre uma e cinco categorias");
-		
-		Wallpaper wpp = form.converter();
-		categorias.forEach(cat -> wpp.adicionarCategoria(cat));
-		
-		Usuario user = this.tokenService.getUsuario(request, this.userRepository);
-		if (user == null) return ResponseEntity.badRequest().body("Usuário nulo!");
-		wpp.setAutor(user);
-		this.wppRepository.save(wpp);
-		
-		URI uri = uriBuilder.path("/wpps/{id}").buildAndExpand(wpp.getId()).toUri();
-		return ResponseEntity.created(uri).body(new WallpaperDto(wpp));
+		try {
+			WallpaperDto dto = service.criarWallpaper(form, request);
+			URI uri = uriBuilder.path("/wpps/{id}").buildAndExpand(dto.getId()).toUri();
+			return ResponseEntity.created(uri).body(dto);
+		} catch(Exception e) {
+			return ResponseEntity.badRequest().body(e.getMessage());
+		}
 	}
 	
 	@PutMapping("/{id}")
-	@Transactional
 	public ResponseEntity<?> editarWallpaper(@PathVariable Long id, @Valid @RequestBody SalvarWallpaperForm form, HttpServletRequest request) {
-		Optional<Wallpaper> opt = this.wppRepository.findById(id);
-		if (opt.isEmpty()) return ResponseEntity.notFound().build();		
-		Wallpaper wpp = opt.get();
-		
-		if (this.tokenService.usuarioEhDono(request, userRepository, wpp) ||
-				this.tokenService.usuarioEhModerador(request, userRepository, perfilRepository)) {
-			wpp.setTitulo(form.getTitulo());
-			wpp.setUrl(form.getUrl());
-			wpp.resetarCategorias();
-		
-			HashSet<Categoria> categorias = form.getCategoriasBanco(catRepository);
-			if (categorias == null) return ResponseEntity.badRequest().body("Categorias inválidas, um wallpaper deve ter entre uma e cinco categorias");
-			
-			categorias.forEach(cat -> wpp.adicionarCategoria(cat));
-			this.wppRepository.save(wpp);
+		try {
+			this.service.editarWallpaper(id, form, request);
 			return ResponseEntity.ok().build();
+		} catch(BadCredentialsException e) {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+		} catch(Exception e) {
+			return ResponseEntity.badRequest().body(e.getMessage());
 		}
-		return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
 	}
 	
 	@DeleteMapping("/{id}")
-	@Transactional
 	public ResponseEntity<?> deletarWpp(@PathVariable Long id, HttpServletRequest request) {
-		Optional<Wallpaper> opt = this.wppRepository.findById(id);
-		if (opt.isEmpty()) return ResponseEntity.notFound().build();
-		Wallpaper wpp = opt.get();
-		
-		if (this.tokenService.usuarioEhDono(request, userRepository, wpp) || 
-				this.tokenService.usuarioEhModerador(request, userRepository, perfilRepository)) {
-						
-			this.wppRepository.delete(wpp);
+		try {
+			this.service.excluirWallpaper(id, request);
 			return ResponseEntity.ok().build();
+		} catch(BadCredentialsException e) {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+		} catch(EntityNotFoundException e) {
+			return ResponseEntity.badRequest().body(e.getMessage());
 		}
-		return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
 	}
 	
 	@GetMapping("/curtir/{id}")
 	@Transactional
 	public ResponseEntity<?> curtirWallpaper(@PathVariable Long id, HttpServletRequest request) {
-		Optional<Wallpaper> opt = this.wppRepository.findById(id);
-		if (opt.isEmpty()) return ResponseEntity.notFound().build();
-		Wallpaper wpp = opt.get();
-		
-		Usuario user = this.tokenService.getUsuario(request, this.userRepository);
-		if (user == null) return ResponseEntity.badRequest().body("Usuário nulo!");
-		
-		user.curtirWallpaper(wpp);
-		return ResponseEntity.ok().build();
+		try {
+			this.service.curtirWallpaper(id, request);
+			return ResponseEntity.ok().build();
+		} catch(InsufficientAuthenticationException e) {
+			return ResponseEntity.badRequest().body(e.getMessage());
+		} catch(EntityNotFoundException e) {
+			return ResponseEntity.notFound().build();
+		}
 	}
 	
 	@GetMapping("/descurtir/{id}")
 	@Transactional
 	public ResponseEntity<?> descurtirWallpaper(@PathVariable Long id, HttpServletRequest request) {
-		Optional<Wallpaper> opt = this.wppRepository.findById(id);
-		if (opt.isEmpty()) return ResponseEntity.notFound().build();
-		Wallpaper wpp = opt.get();
+		try {
+			this.service.descurtirWallpaper(id, request);
+			return ResponseEntity.ok().build();
+		} catch(InsufficientAuthenticationException e) {
+			return ResponseEntity.badRequest().body(e.getMessage());
+		} catch(EntityNotFoundException e) {
+			return ResponseEntity.notFound().build();
+		}
 		
-		Usuario user = this.tokenService.getUsuario(request, this.userRepository);
-		if (user == null) return ResponseEntity.badRequest().body("Usuário nulo!");
-		
-		user.descurtirWallpaper(wpp);
-		return ResponseEntity.ok().build();
 	}
 	
 	@GetMapping("/salvos")
 	public Page<WallpaperDto> listarWallpapersSalvos(@PageableDefault(direction = Direction.DESC, page = 0, size = 10) Pageable paginacao, HttpServletRequest request) {
-			
-		Usuario user = this.tokenService.getUsuario(request, this.userRepository);
-		if (user == null) return null;
-		
-		Page<Wallpaper> wpps = userRepository.getWallpapersSalvos(user.getId(), paginacao);
-		return WallpaperDto.converter(wpps);
-		
+		try {			
+			return this.service.buscarWallpapersSalvos(request, paginacao);
+		} catch (Exception e) {
+			return null;
+		}
 	}
 }
