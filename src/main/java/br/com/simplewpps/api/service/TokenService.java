@@ -1,10 +1,11 @@
-package br.com.simplewpps.api.config.security;
+package br.com.simplewpps.api.service;
 
 import java.util.Date;
 import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -23,9 +24,12 @@ public class TokenService {
 
 	@Value("${forum.jwt.expiration}")
 	private String expiration;
-	
 	@Value("${forum.jwt.secret}")
 	private String secret;
+	@Autowired
+	private UsuarioRepository repository;
+	@Autowired
+	private TipoPerfilRepository perfilRepository;
 
 	public String gerarToken(Authentication authentication) {
 		Usuario logado = (Usuario) authentication.getPrincipal();
@@ -55,7 +59,7 @@ public class TokenService {
 		return Long.parseLong(claims.getSubject());
 	}
 	
-	public Usuario getUsuario(HttpServletRequest request, UsuarioRepository repository) {
+	public Usuario getUsuario(HttpServletRequest request) {
 		String token = request.getHeader("Authorization");
 		if (token == null || token.isEmpty() || !token.startsWith("Bearer ")) {
 			return null;
@@ -64,26 +68,21 @@ public class TokenService {
 		token = token.substring(7, token.length());
 		Long idUsuario = this.getIdUsuario(token);
 	
-		Optional<Usuario> opt = repository.findById(idUsuario);
+		Optional<Usuario> opt = this.repository.findById(idUsuario);
 		Usuario user = opt.isEmpty() ? null : opt.get();
 		return user;
 	}
 	
-	public boolean usuarioEhDono(HttpServletRequest request, UsuarioRepository repository, Wallpaper wpp) {
-		Usuario user = this.getUsuario(request, repository);
+	public boolean usuarioEhDono(HttpServletRequest request, Wallpaper wpp) {
+		Usuario user = this.getUsuario(request);
 		if (user == null) return false;
 		
-		if(wpp.getAutor().equals(user)) {
-			return true;
-		} else {
-			return false;
-		}
+		return wpp.getAutor().equals(user);
 	}
 	
-	public boolean usuarioEhModerador(HttpServletRequest request, UsuarioRepository repository, 
-			TipoPerfilRepository perfilRepository) {
-		Usuario user = this.getUsuario(request, repository);
-		TipoPerfil moderador = perfilRepository.findByNome("ROLE_MODERADOR").get();
+	public boolean usuarioEhModerador(HttpServletRequest request) {
+		Usuario user = this.getUsuario(request);
+		TipoPerfil moderador = this.perfilRepository.findByNome("ROLE_MODERADOR").get();
 		if (user == null) return false;
 		
 		return user.getAuthorities().contains(moderador);

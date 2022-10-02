@@ -14,7 +14,6 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.stereotype.Service;
 
-import br.com.simplewpps.api.config.security.TokenService;
 import br.com.simplewpps.api.controller.dto.DetailedWallpaperDto;
 import br.com.simplewpps.api.controller.dto.WallpaperDto;
 import br.com.simplewpps.api.controller.form.SalvarWallpaperForm;
@@ -22,7 +21,6 @@ import br.com.simplewpps.api.model.Categoria;
 import br.com.simplewpps.api.model.Usuario;
 import br.com.simplewpps.api.model.Wallpaper;
 import br.com.simplewpps.api.repository.CategoriaRepository;
-import br.com.simplewpps.api.repository.TipoPerfilRepository;
 import br.com.simplewpps.api.repository.UsuarioRepository;
 import br.com.simplewpps.api.repository.WallpaperRepository;
 
@@ -35,8 +33,6 @@ public class WallpaperService {
 	private CategoriaRepository catRepository;
 	@Autowired
 	private UsuarioRepository userRepository;
-	@Autowired
-	private TipoPerfilRepository perfilRepository;
 	@Autowired
 	private TokenService tokenService;
 	
@@ -55,14 +51,14 @@ public class WallpaperService {
 	}
 	
 	public Usuario extrairUsuario(HttpServletRequest request) {
-		Usuario user = this.tokenService.getUsuario(request, this.userRepository);
+		Usuario user = this.tokenService.getUsuario(request);
 		if (user == null) throw new InsufficientAuthenticationException("Usuário nulo!");
 		return user;
 	}
 	
 	public void verificaSeTemPermissao(HttpServletRequest request, Wallpaper wpp) {
-		if (!this.tokenService.usuarioEhDono(request, this.userRepository, wpp) &&
-				!this.tokenService.usuarioEhModerador(request, this.userRepository, this.perfilRepository))
+		if (!this.tokenService.usuarioEhDono(request, wpp) &&
+				!this.tokenService.usuarioEhModerador(request))
 			throw new BadCredentialsException("Acesso negado!");
 	}
 	

@@ -13,6 +13,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import br.com.simplewpps.api.model.Usuario;
 import br.com.simplewpps.api.repository.UsuarioRepository;
+import br.com.simplewpps.api.service.TokenService;
 
 public class AutenticacaoViaTokenFilter extends OncePerRequestFilter {
 	

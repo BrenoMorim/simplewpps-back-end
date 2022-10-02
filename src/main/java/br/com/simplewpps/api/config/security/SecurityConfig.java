@@ -15,6 +15,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import br.com.simplewpps.api.repository.UsuarioRepository;
+import br.com.simplewpps.api.service.TokenService;
 
 @Configuration
 @EnableWebSecurity

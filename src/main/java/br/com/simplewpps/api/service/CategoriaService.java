@@ -22,16 +22,18 @@ public class CategoriaService {
 	@Autowired
 	private CategoriaRepository catRepository;
 	
-	public void verificaSeExisteCategoria(Long id) {
+	public Categoria extrairCategoria(Long id) {
 		Optional<Categoria> categoria = catRepository.findById(id);
 		if(categoria.isEmpty()) 
 			throw new EntityNotFoundException("Categoria não encontrada!");
+		return categoria.get();
 	}
 	
-	public void verificaSeExisteCategoria(String nome) {
+	public Categoria extrairCategoria(String nome) {
 		Optional<Categoria> categoria = catRepository.findByNome(nome);
 		if(categoria.isEmpty()) 
 			throw new EntityNotFoundException("Categoria não encontrada!");
+		return categoria.get();
 	}
 	
 	public void verificaSeJaExisteCategoriaComNome(String nome) {
@@ -45,10 +47,8 @@ public class CategoriaService {
 	}
 	
 	public CategoriaDto buscarCategoriaPorNome(String nome) {
-		Optional<Categoria> categoria = catRepository.findByNome(nome);
-		verificaSeExisteCategoria(nome);
-		
-		return new CategoriaDto(categoria.get());
+		Categoria categoria = this.extrairCategoria(nome);
+		return new CategoriaDto(categoria);
 	}
 	
 	@Transactional
@@ -61,11 +61,9 @@ public class CategoriaService {
 	
 	@Transactional
 	public CategoriaDto editarCategoria(Long id, SalvarCategoriaForm form) {
-		Optional<Categoria> opt = this.catRepository.findById(id);
-		verificaSeExisteCategoria(id);
 		verificaSeJaExisteCategoriaComNome(form.getNome());
 		
-		Categoria categoria = opt.get();
+		Categoria categoria = this.extrairCategoria(id);
 		categoria.setNome(form.getNome());
 		this.catRepository.save(categoria);
 		
@@ -74,9 +72,7 @@ public class CategoriaService {
 	
 	@Transactional
 	public void excluirCategoria(Long id) {
-		verificaSeExisteCategoria(id);
-		
-		Categoria cat = this.catRepository.findById(id).get();
+		Categoria cat = this.extrairCategoria(id);
 		this.catRepository.delete(cat);
 	}
 }
