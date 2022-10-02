@@ -1,9 +1,9 @@
 package br.com.simplewpps.api.controller;
 
 import java.net.URI;
-import java.util.Optional;
 
-import javax.transaction.Transactional;
+import javax.persistence.EntityExistsException;
+import javax.persistence.EntityNotFoundException;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,77 +25,69 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import br.com.simplewpps.api.controller.dto.CategoriaDto;
 import br.com.simplewpps.api.controller.form.SalvarCategoriaForm;
-import br.com.simplewpps.api.model.Categoria;
-import br.com.simplewpps.api.repository.CategoriaRepository;
+import br.com.simplewpps.api.service.CategoriaService;
 
 @RestController
 @RequestMapping("/categorias")
 public class CategoriaController {
 	
-	@Autowired 
-	private CategoriaRepository catRepository;
+	@Autowired
+	private CategoriaService service;
 	
 	@GetMapping
 	@Cacheable(value = "listaDeCategorias")
 	public Page<CategoriaDto> listarCategorias(@PageableDefault(page = 0, size = 10) Pageable paginacao) {
-		Page<Categoria> categorias = catRepository.findAll(paginacao);
-		return CategoriaDto.converter(categorias);
+		return service.buscarCategorias(paginacao);
 	}
 	
 	@GetMapping("/{nome}")
 	public ResponseEntity<CategoriaDto> pesquisarCategoria(@PathVariable String nome) {
-		Optional<Categoria> categoria = catRepository.findByNome(nome);
-		
-		if(categoria.isEmpty()) return ResponseEntity.notFound().build();
-		return ResponseEntity.ok(new CategoriaDto(categoria.get()));
+		try {			
+			CategoriaDto categoria = service.buscarCategoriaPorNome(nome);
+			return ResponseEntity.ok(categoria);
+		} catch (EntityNotFoundException e) {
+			return ResponseEntity.notFound().build();
+		}
 	}
 	
 	@PostMapping
-	@Transactional
 	@CacheEvict(value = "listaDeCategorias", allEntries = true)
-	public ResponseEntity<?> criarCategoria(@RequestBody @Valid SalvarCategoriaForm form,
-													UriComponentsBuilder uriBuilder) {
-		if (this.catRepository.findByNome(form.getNome()).isPresent()) {			
-			return ResponseEntity.badRequest().body("Já existe uma categoria com esse nome!");
+	public ResponseEntity<?> criarCategoria(@RequestBody @Valid SalvarCategoriaForm form, UriComponentsBuilder uriBuilder) {
+		try {
+			
+			CategoriaDto dto = service.salvarCategoria(form);
+			
+			URI uri = uriBuilder.path("/categorias/{nome}").buildAndExpand(dto.getNome()).toUri();
+			return ResponseEntity.created(uri).body(dto);
+		} catch (EntityExistsException e) {
+			return ResponseEntity.badRequest().body(e.getMessage());
 		}
-		
-		Categoria cat = form.converter();
-		this.catRepository.save(cat);
-		
-		URI uri = uriBuilder.path("/categorias/{nome}").buildAndExpand(cat.getNome()).toUri();
-		return ResponseEntity.created(uri).body(new CategoriaDto(cat));
 		
 	}
 	
 	@PutMapping("/{id}")
-	@Transactional
 	@CacheEvict(value = "listaDeTopicos", allEntries = true)
-	public ResponseEntity<?> alterarCategoria(@PathVariable Long id, @RequestBody @Valid SalvarCategoriaForm form,
-													UriComponentsBuilder uriBuilder) {
-		if (this.catRepository.findByNome(form.getNome()).isPresent()) 			
-			return ResponseEntity.badRequest().body("Já existe uma categoria com esse nome!");
+	public ResponseEntity<?> alterarCategoria(@PathVariable Long id, @RequestBody @Valid SalvarCategoriaForm form) {
+		try {
+			CategoriaDto dto = service.editarCategoria(id, form);
+			return ResponseEntity.ok(dto);
+		} catch(EntityNotFoundException e) {
+			return ResponseEntity.notFound().build();
+		} catch (EntityExistsException e) {
+			return ResponseEntity.badRequest().body(e.getMessage());
+		}
 		
-		
-		Optional<Categoria> opt = this.catRepository.findById(id);
-		if (opt.isEmpty()) return ResponseEntity.notFound().build();
-		
-		Categoria cat = opt.get();
-		cat.setNome(form.getNome());
-		this.catRepository.save(cat);
-		
-		return ResponseEntity.ok(new CategoriaDto(cat));
 	}
 	
 	@DeleteMapping("/{id}")
-	@Transactional
 	@CacheEvict(value = "listaDeCategorias", allEntries = true)
 	public ResponseEntity<?> deletarCategoria(@PathVariable Long id) {
-		Optional<Categoria> opt = this.catRepository.findById(id);
-		if (opt.isEmpty()) return ResponseEntity.notFound().build();
-		
-		Categoria cat = opt.get();
-		this.catRepository.delete(cat);
-		return ResponseEntity.ok().build();
+		try {
+			service.excluirCategoria(id);
+			return ResponseEntity.noContent().build();
+		} catch(EntityNotFoundException e) {
+			return ResponseEntity.notFound().build();
+		}
 	}
 	
 }
