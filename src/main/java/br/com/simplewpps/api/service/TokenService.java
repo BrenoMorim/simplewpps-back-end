@@ -22,9 +22,9 @@ import io.jsonwebtoken.SignatureAlgorithm;
 @Service
 public class TokenService {
 
-	@Value("${forum.jwt.expiration}")
+	@Value("${api.jwt.expiration}")
 	private String expiration;
-	@Value("${forum.jwt.secret}")
+	@Value("${api.jwt.secret}")
 	private String secret;
 	@Autowired
 	private UsuarioRepository repository;
