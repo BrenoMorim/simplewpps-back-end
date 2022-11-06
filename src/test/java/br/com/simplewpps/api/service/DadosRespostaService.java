@@ -24,9 +24,10 @@ public class DadosRespostaService {
 	}
 	
 	public Boolean verificaSeCorpoContemJson(ResultActions result, String chave, String valor) throws Exception {
-		return result.andReturn().getResponse()
-				.getContentAsString()
-				.contains(String.format("\"%s\":%s", chave, valor));
+		String conteudo = result.andReturn().getResponse().getContentAsString(); 
+		
+		return (conteudo.contains(String.format("\"%s\":%s", chave, valor)) ||
+				conteudo.contains(String.format("\"%s\":\"%s\"", chave, valor)));
 	}
 	public Boolean verificaSeCorpoContemString(ResultActions result, String conteudo) throws Exception {
 		return result.andReturn().getResponse()

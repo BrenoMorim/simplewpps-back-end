@@ -36,7 +36,7 @@ public class AutenticacaoControllerTest {
 	@Test
 	public void deveCriarUsuarioCasoDadosDeRegistroEstejamCorretos() throws Exception {
 		ResultActions result = mock.efetuarRegister("nome_valido", "emailcorreto@email.com", "1234567");
-		assertEquals(Integer.valueOf(201), service.getStatus(result));
+		assertEquals(Integer.valueOf(200), service.getStatus(result));
 		assertTrue(service.verificaSeCorpoContemJson(result, "nickname", "nome_valido"));
 		assertTrue(service.verificaSeCorpoContemJson(result, "email", "emailcorreto@email.com"));
 	}
