@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.stream.Collectors;
 
-import br.com.simplewpps.api.domain.categoria.CategoriaDto;
+import br.com.simplewpps.api.domain.categoria.DadosCategoria;
 import lombok.Getter;
 
 @Getter
@@ -13,7 +13,7 @@ public class DadosDetalhadosWallpaper {
 	private Long id;
 	private String titulo;
 	private String url;
-	private HashSet<CategoriaDto> categorias = new HashSet<CategoriaDto>();
+	private HashSet<DadosCategoria> categorias = new HashSet<DadosCategoria>();
 	private LocalDateTime dataCriacao;
 	private String nomeAutor;
 	
@@ -23,7 +23,7 @@ public class DadosDetalhadosWallpaper {
 		this.nomeAutor = wpp.getAutor().getNickname();
 		this.url = wpp.getUrl();
 		this.dataCriacao = wpp.getDataCriacao();
-		this.categorias.addAll(wpp.getCategorias().stream().map(CategoriaDto::new).collect(Collectors.toSet()));
+		this.categorias.addAll(wpp.getCategorias().stream().map(DadosCategoria::new).collect(Collectors.toSet()));
 	}
 	
 }

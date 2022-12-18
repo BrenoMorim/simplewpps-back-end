@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import br.com.simplewpps.api.domain.categoria.CategoriaDto;
+import br.com.simplewpps.api.domain.categoria.DadosCategoria;
 import br.com.simplewpps.api.domain.categoria.SalvarCategoriaForm;
 import br.com.simplewpps.api.domain.categoria.CategoriaService;
 
@@ -36,58 +36,38 @@ public class CategoriaController {
 	
 	@GetMapping
 	@Cacheable(value = "listaDeCategorias")
-	public Page<CategoriaDto> listarCategorias(@PageableDefault(page = 0, size = 10) Pageable paginacao) {
+	public Page<DadosCategoria> listarCategorias(@PageableDefault(page = 0, size = 10) Pageable paginacao) {
 		return service.buscarCategorias(paginacao);
 	}
 	
 	@GetMapping("/{nome}")
-	public ResponseEntity<CategoriaDto> pesquisarCategoria(@PathVariable String nome) {
-		try {			
-			CategoriaDto categoria = service.buscarCategoriaPorNome(nome);
-			return ResponseEntity.ok(categoria);
-		} catch (EntityNotFoundException e) {
-			return ResponseEntity.notFound().build();
-		}
+	public ResponseEntity<DadosCategoria> pesquisarCategoria(@PathVariable String nome) {
+		DadosCategoria categoria = service.buscarCategoriaPorNome(nome);
+		return ResponseEntity.ok(categoria);
 	}
 	
 	@PostMapping
 	@CacheEvict(value = "listaDeCategorias", allEntries = true)
 	public ResponseEntity<?> criarCategoria(@RequestBody @Valid SalvarCategoriaForm form, UriComponentsBuilder uriBuilder) {
-		try {
-			
-			CategoriaDto dto = service.salvarCategoria(form);
-			
-			URI uri = uriBuilder.path("/categorias/{nome}").buildAndExpand(dto.getNome()).toUri();
-			return ResponseEntity.created(uri).body(dto);
-		} catch (EntityExistsException e) {
-			return ResponseEntity.badRequest().body(e.getMessage());
-		}
-		
+
+		DadosCategoria dto = service.salvarCategoria(form);
+
+		URI uri = uriBuilder.path("/categorias/{nome}").buildAndExpand(dto.getNome()).toUri();
+		return ResponseEntity.created(uri).body(dto);
 	}
 	
 	@PutMapping("/{id}")
 	@CacheEvict(value = "listaDeTopicos", allEntries = true)
 	public ResponseEntity<?> alterarCategoria(@PathVariable Long id, @RequestBody @Valid SalvarCategoriaForm form) {
-		try {
-			CategoriaDto dto = service.editarCategoria(id, form);
-			return ResponseEntity.ok(dto);
-		} catch(EntityNotFoundException e) {
-			return ResponseEntity.notFound().build();
-		} catch (EntityExistsException e) {
-			return ResponseEntity.badRequest().body(e.getMessage());
-		}
-		
+		DadosCategoria dto = service.editarCategoria(id, form);
+		return ResponseEntity.ok(dto);
 	}
 	
 	@DeleteMapping("/{id}")
 	@CacheEvict(value = "listaDeCategorias", allEntries = true)
 	public ResponseEntity<?> deletarCategoria(@PathVariable Long id) {
-		try {
-			service.excluirCategoria(id);
-			return ResponseEntity.noContent().build();
-		} catch(EntityNotFoundException e) {
-			return ResponseEntity.notFound().build();
-		}
+		service.excluirCategoria(id);
+		return ResponseEntity.noContent().build();
 	}
 	
 }

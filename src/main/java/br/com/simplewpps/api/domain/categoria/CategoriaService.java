@@ -36,33 +36,33 @@ public class CategoriaService {
 			throw new EntityExistsException("Já existe uma categoria com esse nome!");
 	}
 	
-	public Page<CategoriaDto> buscarCategorias(Pageable paginacao) {		
+	public Page<DadosCategoria> buscarCategorias(Pageable paginacao) {
 		Page<Categoria> categorias = catRepository.findAll(paginacao);
-		return CategoriaDto.converter(categorias);
+		return DadosCategoria.converter(categorias);
 	}
 	
-	public CategoriaDto buscarCategoriaPorNome(String nome) {
+	public DadosCategoria buscarCategoriaPorNome(String nome) {
 		Categoria categoria = this.extrairCategoria(nome);
-		return new CategoriaDto(categoria);
+		return new DadosCategoria(categoria);
 	}
 	
 	@Transactional
-	public CategoriaDto salvarCategoria(SalvarCategoriaForm form) {
+	public DadosCategoria salvarCategoria(SalvarCategoriaForm form) {
 		Categoria cat = form.converter();
 		verificaSeJaExisteCategoriaComNome(cat.getNome());
 		this.catRepository.save(cat);
-		return new CategoriaDto(cat);
+		return new DadosCategoria(cat);
 	}
 	
 	@Transactional
-	public CategoriaDto editarCategoria(Long id, SalvarCategoriaForm form) {
+	public DadosCategoria editarCategoria(Long id, SalvarCategoriaForm form) {
 		verificaSeJaExisteCategoriaComNome(form.nome());
 		
 		Categoria categoria = this.extrairCategoria(id);
 		categoria.setNome(form.nome());
 		this.catRepository.save(categoria);
 		
-		return new CategoriaDto(categoria);
+		return new DadosCategoria(categoria);
 	}
 	
 	@Transactional

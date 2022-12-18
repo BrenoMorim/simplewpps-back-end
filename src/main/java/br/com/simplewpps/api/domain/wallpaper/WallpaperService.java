@@ -33,10 +33,8 @@ public class WallpaperService {
 	private TokenService tokenService;
 	
 	public Wallpaper extrairWallpaper(Long id) {
-		Optional<Wallpaper> opt = this.wppRepository.findById(id);
-		if (opt.isEmpty())
-			throw new EntityNotFoundException("Wallpaper não encontrado");
-		return opt.get();
+		Wallpaper wpp = this.wppRepository.getReferenceById(id);
+		return wpp;
 	}
 	
 	public HashSet<Categoria> extrairCategorias(SalvarWallpaperForm form) {
@@ -55,7 +53,7 @@ public class WallpaperService {
 	public void verificaSeTemPermissao(HttpServletRequest request, Wallpaper wpp) {
 		if (!this.tokenService.usuarioEhDono(request, wpp) &&
 				!this.tokenService.usuarioEhModerador(request))
-			throw new BadCredentialsException("Acesso negado!");
+			throw new InsufficientAuthenticationException("Acesso negado!");
 	}
 	
 	public Page<DadosWallpaper> buscarWallpapers(String titulo, String categoriaNome, Pageable paginacao) {

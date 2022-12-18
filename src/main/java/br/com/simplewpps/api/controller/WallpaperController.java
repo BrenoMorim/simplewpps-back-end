@@ -49,74 +49,40 @@ public class WallpaperController {
 	
 	@GetMapping("/{id}")
 	public ResponseEntity<DadosDetalhadosWallpaper> detalharWallpaper(@PathVariable Long id) {
-		try {
-			return ResponseEntity.ok(service.buscarWallpaperPorId(id));
-		} catch(EntityNotFoundException e) {
-			return ResponseEntity.notFound().build();
-		}
-		
+		return ResponseEntity.ok(service.buscarWallpaperPorId(id));
 	}
 	
 	@PostMapping()
 	public ResponseEntity<?> salvarWallpaper(@Valid @RequestBody SalvarWallpaperForm form, HttpServletRequest request, UriComponentsBuilder uriBuilder) {
-		try {
-			DadosWallpaper dto = service.criarWallpaper(form, request);
-			URI uri = uriBuilder.path("/wpps/{id}").buildAndExpand(dto.id()).toUri();
-			return ResponseEntity.created(uri).body(dto);
-		} catch(Exception e) {
-			return ResponseEntity.badRequest().body(e.getMessage());
-		}
+		DadosWallpaper dto = service.criarWallpaper(form, request);
+		URI uri = uriBuilder.path("/wpps/{id}").buildAndExpand(dto.id()).toUri();
+		return ResponseEntity.created(uri).body(dto);
 	}
 	
 	@PutMapping("/{id}")
-	public ResponseEntity<?> editarWallpaper(@PathVariable Long id, @RequestBody SalvarWallpaperForm form, HttpServletRequest request) {
-		try {
-			this.service.editarWallpaper(id, form, request);
-			return ResponseEntity.ok().build();
-		} catch(BadCredentialsException e) {
-			return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-		} catch(Exception e) {
-			return ResponseEntity.badRequest().body(e.getMessage());
-		}
+	public ResponseEntity<DadosWallpaper> editarWallpaper(@PathVariable Long id, @RequestBody SalvarWallpaperForm form, HttpServletRequest request) {
+		DadosWallpaper dados = this.service.editarWallpaper(id, form, request);
+		return ResponseEntity.ok(dados);
 	}
 	
 	@DeleteMapping("/{id}")
 	public ResponseEntity<?> deletarWpp(@PathVariable Long id, HttpServletRequest request) {
-		try {
-			this.service.excluirWallpaper(id, request);
-			return ResponseEntity.ok().build();
-		} catch(BadCredentialsException e) {
-			return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-		} catch(EntityNotFoundException e) {
-			return ResponseEntity.badRequest().body(e.getMessage());
-		}
+		this.service.excluirWallpaper(id, request);
+		return ResponseEntity.noContent().build();
 	}
 	
 	@GetMapping("/curtir/{id}")
 	@Transactional
 	public ResponseEntity<?> curtirWallpaper(@PathVariable Long id, HttpServletRequest request) {
-		try {
-			this.service.curtirWallpaper(id, request);
-			return ResponseEntity.ok().build();
-		} catch(InsufficientAuthenticationException e) {
-			return ResponseEntity.badRequest().body(e.getMessage());
-		} catch(EntityNotFoundException e) {
-			return ResponseEntity.notFound().build();
-		}
+		this.service.curtirWallpaper(id, request);
+		return ResponseEntity.ok().build();
 	}
 	
 	@GetMapping("/descurtir/{id}")
 	@Transactional
 	public ResponseEntity<?> descurtirWallpaper(@PathVariable Long id, HttpServletRequest request) {
-		try {
-			this.service.descurtirWallpaper(id, request);
-			return ResponseEntity.ok().build();
-		} catch(InsufficientAuthenticationException e) {
-			return ResponseEntity.badRequest().body(e.getMessage());
-		} catch(EntityNotFoundException e) {
-			return ResponseEntity.notFound().build();
-		}
-		
+		this.service.descurtirWallpaper(id, request);
+		return ResponseEntity.ok().build();
 	}
 	
 	@GetMapping("/salvos")

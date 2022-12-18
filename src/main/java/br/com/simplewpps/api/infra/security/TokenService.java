@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
@@ -55,8 +56,12 @@ public class TokenService {
 	}
 
 	public Long getIdUsuario(String token) {
-		Claims claims = Jwts.parser().setSigningKey(this.secret).parseClaimsJws(token).getBody();
-		return Long.parseLong(claims.getSubject());
+		try {
+			Claims claims = Jwts.parser().setSigningKey(this.secret).parseClaimsJws(token).getBody();
+			return Long.parseLong(claims.getSubject());
+		} catch (IllegalArgumentException ex) {
+			throw new InsufficientAuthenticationException(ex.getMessage());
+		}
 	}
 	
 	public Usuario getUsuario(HttpServletRequest request) {

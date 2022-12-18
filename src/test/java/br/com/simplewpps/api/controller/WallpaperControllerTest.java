@@ -77,13 +77,13 @@ public class WallpaperControllerTest {
 		Long id = this.mock.criarWallpaperQualquerERetornarId(tokenUser);
 		
 		ResultActions resultDelUsuario = mock.performarDelete(new URI("/wpps/2"), tokenUser);
-		assertEquals(Integer.valueOf(403), service.getStatus(resultDelUsuario));
+		assertEquals(Integer.valueOf(401), service.getStatus(resultDelUsuario));
 		
 		ResultActions resultDelAutor = mock.performarDelete(new URI("/wpps/1"), tokenUser);
-		assertEquals(Integer.valueOf(200), service.getStatus(resultDelAutor));
+		assertEquals(Integer.valueOf(204), service.getStatus(resultDelAutor));
 		
 		ResultActions resultDelMod = mock.performarDelete(new URI("/wpps/" + id), tokenMod);
-		assertEquals(Integer.valueOf(200), service.getStatus(resultDelMod));
+		assertEquals(Integer.valueOf(204), service.getStatus(resultDelMod));
 	}
 	
 	@Test
