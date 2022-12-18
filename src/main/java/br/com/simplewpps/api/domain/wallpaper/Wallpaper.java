@@ -1,4 +1,4 @@
-package br.com.simplewpps.api.model;
+package br.com.simplewpps.api.domain.wallpaper;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -6,6 +6,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Objects;
 
+import br.com.simplewpps.api.domain.categoria.Categoria;
+import br.com.simplewpps.api.domain.usuario.Usuario;
 import jakarta.persistence.*;
 
 @Entity(name = "Wallpaper")
@@ -20,7 +22,7 @@ public class Wallpaper {
 	@ManyToOne()
 	private Usuario autor;
 	@ManyToMany()
-	private Collection<Categoria> categorias = new HashSet<Categoria>(); 
+	private Collection<Categoria> categorias = new HashSet<Categoria>();
 	
 	public String getTitulo() {
 		return titulo;

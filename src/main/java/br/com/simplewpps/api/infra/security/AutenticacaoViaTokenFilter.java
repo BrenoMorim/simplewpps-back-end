@@ -1,4 +1,4 @@
-package br.com.simplewpps.api.config.security;
+package br.com.simplewpps.api.infra.security;
 
 import java.io.IOException;
 
@@ -13,9 +13,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import br.com.simplewpps.api.model.Usuario;
-import br.com.simplewpps.api.repository.UsuarioRepository;
-import br.com.simplewpps.api.service.TokenService;
+import br.com.simplewpps.api.domain.usuario.Usuario;
+import br.com.simplewpps.api.domain.usuario.UsuarioRepository;
 
 @Component
 public class AutenticacaoViaTokenFilter extends OncePerRequestFilter {

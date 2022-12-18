@@ -1,8 +1,9 @@
-package br.com.simplewpps.api.service;
+package br.com.simplewpps.api.domain.wallpaper;
 
 import java.util.HashSet;
 import java.util.Optional;
 
+import br.com.simplewpps.api.infra.security.TokenService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
@@ -14,15 +15,10 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.stereotype.Service;
 
-import br.com.simplewpps.api.controller.dto.DetailedWallpaperDto;
-import br.com.simplewpps.api.controller.dto.WallpaperDto;
-import br.com.simplewpps.api.controller.form.SalvarWallpaperForm;
-import br.com.simplewpps.api.model.Categoria;
-import br.com.simplewpps.api.model.Usuario;
-import br.com.simplewpps.api.model.Wallpaper;
-import br.com.simplewpps.api.repository.CategoriaRepository;
-import br.com.simplewpps.api.repository.UsuarioRepository;
-import br.com.simplewpps.api.repository.WallpaperRepository;
+import br.com.simplewpps.api.domain.categoria.Categoria;
+import br.com.simplewpps.api.domain.usuario.Usuario;
+import br.com.simplewpps.api.domain.categoria.CategoriaRepository;
+import br.com.simplewpps.api.domain.usuario.UsuarioRepository;
 
 @Service
 public class WallpaperService {

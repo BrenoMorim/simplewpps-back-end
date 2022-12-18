@@ -1,4 +1,4 @@
-package br.com.simplewpps.api.service;
+package br.com.simplewpps.api.infra.security;
 
 import java.util.Date;
 import java.util.Optional;
@@ -10,11 +10,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
-import br.com.simplewpps.api.model.TipoPerfil;
-import br.com.simplewpps.api.model.Usuario;
-import br.com.simplewpps.api.model.Wallpaper;
-import br.com.simplewpps.api.repository.TipoPerfilRepository;
-import br.com.simplewpps.api.repository.UsuarioRepository;
+import br.com.simplewpps.api.domain.perfil.TipoPerfil;
+import br.com.simplewpps.api.domain.usuario.Usuario;
+import br.com.simplewpps.api.domain.wallpaper.Wallpaper;
+import br.com.simplewpps.api.domain.perfil.TipoPerfilRepository;
+import br.com.simplewpps.api.domain.usuario.UsuarioRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;

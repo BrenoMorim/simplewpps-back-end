@@ -1,4 +1,4 @@
-package br.com.simplewpps.api.controller.form;
+package br.com.simplewpps.api.domain.wallpaper;
 
 import java.util.HashSet;
 import java.util.List;
@@ -8,9 +8,8 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import org.hibernate.validator.constraints.URL;
 
-import br.com.simplewpps.api.model.Categoria;
-import br.com.simplewpps.api.model.Wallpaper;
-import br.com.simplewpps.api.repository.CategoriaRepository;
+import br.com.simplewpps.api.domain.categoria.Categoria;
+import br.com.simplewpps.api.domain.categoria.CategoriaRepository;
 
 public class SalvarWallpaperForm {
 	

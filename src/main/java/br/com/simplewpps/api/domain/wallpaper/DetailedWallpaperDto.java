@@ -1,10 +1,10 @@
-package br.com.simplewpps.api.controller.dto;
+package br.com.simplewpps.api.domain.wallpaper;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.stream.Collectors;
 
-import br.com.simplewpps.api.model.Wallpaper;
+import br.com.simplewpps.api.domain.categoria.CategoriaDto;
 
 public class DetailedWallpaperDto {
 

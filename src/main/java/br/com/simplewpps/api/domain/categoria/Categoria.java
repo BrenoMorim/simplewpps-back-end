@@ -1,4 +1,4 @@
-package br.com.simplewpps.api.model;
+package br.com.simplewpps.api.domain.categoria;
 
 import java.time.LocalDateTime;
 import java.util.Objects;

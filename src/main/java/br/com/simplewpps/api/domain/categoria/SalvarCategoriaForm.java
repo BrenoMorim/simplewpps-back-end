@@ -1,9 +1,7 @@
-package br.com.simplewpps.api.controller.form;
+package br.com.simplewpps.api.domain.categoria;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-
-import br.com.simplewpps.api.model.Categoria;
 
 public class SalvarCategoriaForm {
 

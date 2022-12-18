@@ -27,10 +27,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import br.com.simplewpps.api.controller.dto.DetailedWallpaperDto;
-import br.com.simplewpps.api.controller.dto.WallpaperDto;
-import br.com.simplewpps.api.controller.form.SalvarWallpaperForm;
-import br.com.simplewpps.api.service.WallpaperService;
+import br.com.simplewpps.api.domain.wallpaper.DetailedWallpaperDto;
+import br.com.simplewpps.api.domain.wallpaper.WallpaperDto;
+import br.com.simplewpps.api.domain.wallpaper.SalvarWallpaperForm;
+import br.com.simplewpps.api.domain.wallpaper.WallpaperService;
 
 @RestController
 @RequestMapping("/wpps")

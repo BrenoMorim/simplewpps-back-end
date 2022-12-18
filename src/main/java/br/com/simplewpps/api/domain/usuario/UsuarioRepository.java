@@ -1,4 +1,4 @@
-package br.com.simplewpps.api.repository;
+package br.com.simplewpps.api.domain.usuario;
 
 import java.util.Optional;
 
@@ -7,8 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import br.com.simplewpps.api.model.Usuario;
-import br.com.simplewpps.api.model.Wallpaper;
+import br.com.simplewpps.api.domain.wallpaper.Wallpaper;
 
 public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 

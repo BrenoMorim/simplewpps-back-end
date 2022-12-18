@@ -1,11 +1,9 @@
-package br.com.simplewpps.api.repository;
+package br.com.simplewpps.api.domain.categoria;
 
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-
-import br.com.simplewpps.api.model.Categoria;
 
 @Repository
 public interface CategoriaRepository extends JpaRepository<Categoria, Long> {

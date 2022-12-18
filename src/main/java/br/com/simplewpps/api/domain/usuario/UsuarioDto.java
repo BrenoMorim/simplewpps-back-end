@@ -1,4 +1,4 @@
-package br.com.simplewpps.api.controller.dto;
+package br.com.simplewpps.api.domain.usuario;
 
 public class UsuarioDto {
 	

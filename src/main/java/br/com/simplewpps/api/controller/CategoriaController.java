@@ -23,9 +23,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import br.com.simplewpps.api.controller.dto.CategoriaDto;
-import br.com.simplewpps.api.controller.form.SalvarCategoriaForm;
-import br.com.simplewpps.api.service.CategoriaService;
+import br.com.simplewpps.api.domain.categoria.CategoriaDto;
+import br.com.simplewpps.api.domain.categoria.SalvarCategoriaForm;
+import br.com.simplewpps.api.domain.categoria.CategoriaService;
 
 @RestController
 @RequestMapping("/categorias")

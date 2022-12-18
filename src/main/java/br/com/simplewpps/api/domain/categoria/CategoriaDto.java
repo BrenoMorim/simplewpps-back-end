@@ -1,8 +1,6 @@
-package br.com.simplewpps.api.controller.dto;
+package br.com.simplewpps.api.domain.categoria;
 
 import org.springframework.data.domain.Page;
-
-import br.com.simplewpps.api.model.Categoria;
 
 public class CategoriaDto {
 	

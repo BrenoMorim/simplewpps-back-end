@@ -1,5 +1,7 @@
-package br.com.simplewpps.api.model;
+package br.com.simplewpps.api.domain.usuario;
 
+import br.com.simplewpps.api.domain.wallpaper.Wallpaper;
+import br.com.simplewpps.api.domain.perfil.TipoPerfil;
 import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

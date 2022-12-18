@@ -1,4 +1,4 @@
-package br.com.simplewpps.api.config.security;
+package br.com.simplewpps.api.infra.security;
 
 import java.util.Optional;
 
@@ -8,8 +8,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import br.com.simplewpps.api.model.Usuario;
-import br.com.simplewpps.api.repository.UsuarioRepository;
+import br.com.simplewpps.api.domain.usuario.Usuario;
+import br.com.simplewpps.api.domain.usuario.UsuarioRepository;
 
 @Service
 public class AutenticacaoService implements UserDetailsService {

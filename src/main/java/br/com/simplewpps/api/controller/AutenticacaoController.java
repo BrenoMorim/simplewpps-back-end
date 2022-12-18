@@ -17,15 +17,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.simplewpps.api.controller.dto.TokenDto;
-import br.com.simplewpps.api.controller.dto.UsuarioDto;
-import br.com.simplewpps.api.controller.form.LoginForm;
-import br.com.simplewpps.api.controller.form.RegisterForm;
-import br.com.simplewpps.api.model.TipoPerfil;
-import br.com.simplewpps.api.model.Usuario;
-import br.com.simplewpps.api.repository.TipoPerfilRepository;
-import br.com.simplewpps.api.repository.UsuarioRepository;
-import br.com.simplewpps.api.service.TokenService;
+import br.com.simplewpps.api.infra.security.TokenDto;
+import br.com.simplewpps.api.domain.usuario.UsuarioDto;
+import br.com.simplewpps.api.domain.usuario.LoginForm;
+import br.com.simplewpps.api.domain.usuario.RegisterForm;
+import br.com.simplewpps.api.domain.perfil.TipoPerfil;
+import br.com.simplewpps.api.domain.usuario.Usuario;
+import br.com.simplewpps.api.domain.perfil.TipoPerfilRepository;
+import br.com.simplewpps.api.domain.usuario.UsuarioRepository;
+import br.com.simplewpps.api.infra.security.TokenService;
 
 @RestController
 @RequestMapping("/auth")

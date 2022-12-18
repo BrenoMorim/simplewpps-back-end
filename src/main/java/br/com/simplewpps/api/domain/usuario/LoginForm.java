@@ -1,4 +1,4 @@
-package br.com.simplewpps.api.controller.form;
+package br.com.simplewpps.api.domain.usuario;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

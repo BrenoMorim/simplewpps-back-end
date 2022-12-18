@@ -1,4 +1,4 @@
-package br.com.simplewpps.api.service;
+package br.com.simplewpps.api.domain.categoria;
 
 import java.util.Optional;
 
@@ -11,10 +11,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import br.com.simplewpps.api.controller.dto.CategoriaDto;
-import br.com.simplewpps.api.controller.form.SalvarCategoriaForm;
-import br.com.simplewpps.api.model.Categoria;
-import br.com.simplewpps.api.repository.CategoriaRepository;
+import br.com.simplewpps.api.domain.categoria.CategoriaDto;
+import br.com.simplewpps.api.domain.categoria.SalvarCategoriaForm;
+import br.com.simplewpps.api.domain.categoria.Categoria;
+import br.com.simplewpps.api.domain.categoria.CategoriaRepository;
 
 @Service
 public class CategoriaService {
