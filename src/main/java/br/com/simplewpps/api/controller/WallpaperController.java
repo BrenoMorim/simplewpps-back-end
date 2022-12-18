@@ -27,8 +27,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import br.com.simplewpps.api.domain.wallpaper.DetailedWallpaperDto;
-import br.com.simplewpps.api.domain.wallpaper.WallpaperDto;
+import br.com.simplewpps.api.domain.wallpaper.DadosDetalhadosWallpaper;
+import br.com.simplewpps.api.domain.wallpaper.DadosWallpaper;
 import br.com.simplewpps.api.domain.wallpaper.SalvarWallpaperForm;
 import br.com.simplewpps.api.domain.wallpaper.WallpaperService;
 
@@ -40,15 +40,15 @@ public class WallpaperController {
 	private WallpaperService service;
 	
 	@GetMapping
-	public Page<WallpaperDto> listarWpps(@RequestParam(required = false) String titulo,
-			@RequestParam(required = false) String categoriaNome,
-			@PageableDefault(sort = "dataCriacao", direction = Direction.DESC, page = 0, size = 10) Pageable paginacao) {
+	public Page<DadosWallpaper> listarWpps(@RequestParam(required = false) String titulo,
+                                           @RequestParam(required = false) String categoriaNome,
+                                           @PageableDefault(sort = "dataCriacao", direction = Direction.DESC, page = 0, size = 10) Pageable paginacao) {
 		
 		return service.buscarWallpapers(titulo, categoriaNome, paginacao);
 	}
 	
 	@GetMapping("/{id}")
-	public ResponseEntity<DetailedWallpaperDto> detalharWallpaper(@PathVariable Long id) {
+	public ResponseEntity<DadosDetalhadosWallpaper> detalharWallpaper(@PathVariable Long id) {
 		try {
 			return ResponseEntity.ok(service.buscarWallpaperPorId(id));
 		} catch(EntityNotFoundException e) {
@@ -60,8 +60,8 @@ public class WallpaperController {
 	@PostMapping()
 	public ResponseEntity<?> salvarWallpaper(@Valid @RequestBody SalvarWallpaperForm form, HttpServletRequest request, UriComponentsBuilder uriBuilder) {
 		try {
-			WallpaperDto dto = service.criarWallpaper(form, request);
-			URI uri = uriBuilder.path("/wpps/{id}").buildAndExpand(dto.getId()).toUri();
+			DadosWallpaper dto = service.criarWallpaper(form, request);
+			URI uri = uriBuilder.path("/wpps/{id}").buildAndExpand(dto.id()).toUri();
 			return ResponseEntity.created(uri).body(dto);
 		} catch(Exception e) {
 			return ResponseEntity.badRequest().body(e.getMessage());
@@ -69,7 +69,7 @@ public class WallpaperController {
 	}
 	
 	@PutMapping("/{id}")
-	public ResponseEntity<?> editarWallpaper(@PathVariable Long id, @Valid @RequestBody SalvarWallpaperForm form, HttpServletRequest request) {
+	public ResponseEntity<?> editarWallpaper(@PathVariable Long id, @RequestBody SalvarWallpaperForm form, HttpServletRequest request) {
 		try {
 			this.service.editarWallpaper(id, form, request);
 			return ResponseEntity.ok().build();
@@ -120,7 +120,7 @@ public class WallpaperController {
 	}
 	
 	@GetMapping("/salvos")
-	public Page<WallpaperDto> listarWallpapersSalvos(@PageableDefault(direction = Direction.DESC, page = 0, size = 10) Pageable paginacao, HttpServletRequest request) {
+	public Page<DadosWallpaper> listarWallpapersSalvos(@PageableDefault(direction = Direction.DESC, page = 0, size = 10) Pageable paginacao, HttpServletRequest request) {
 		try {			
 			return this.service.buscarWallpapersSalvos(request, paginacao);
 		} catch (Exception e) {

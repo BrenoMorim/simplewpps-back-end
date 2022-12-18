@@ -17,8 +17,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.simplewpps.api.infra.security.TokenDto;
-import br.com.simplewpps.api.domain.usuario.UsuarioDto;
+import br.com.simplewpps.api.infra.security.DadosToken;
+import br.com.simplewpps.api.domain.usuario.DadosUsuario;
 import br.com.simplewpps.api.domain.usuario.LoginForm;
 import br.com.simplewpps.api.domain.usuario.RegisterForm;
 import br.com.simplewpps.api.domain.perfil.TipoPerfil;
@@ -42,13 +42,13 @@ public class AutenticacaoController {
 	private TokenService tokenService;
 	
 	@PostMapping("/login")
-	public ResponseEntity<TokenDto> autenticar(@RequestBody @Valid LoginForm form) {
+	public ResponseEntity<DadosToken> autenticar(@RequestBody @Valid LoginForm form) {
 		UsernamePasswordAuthenticationToken dadosLogin = form.converter();
 		
 		try {
 			Authentication authentication = authManager.authenticate(dadosLogin);
 			String token = tokenService.gerarToken(authentication);
-			return ResponseEntity.ok(new TokenDto(token, "Bearer"));
+			return ResponseEntity.ok(new DadosToken(token, "Bearer"));
 		} catch (AuthenticationException e) {
 			return ResponseEntity.badRequest().build();
 		}
@@ -68,7 +68,7 @@ public class AutenticacaoController {
 			
 			usuario.adicionaPerfil(perfil);
 			this.usuarioRepository.save(usuario);
-			return ResponseEntity.ok(new UsuarioDto(usuario.getNickname(), usuario.getEmail()));
+			return ResponseEntity.ok(new DadosUsuario(usuario.getNickname(), usuario.getEmail()));
 			
 		} else {
 			return ResponseEntity.badRequest().body("Já existe um usuário com este email!");

@@ -1,7 +1,9 @@
 package br.com.simplewpps.api.domain.categoria;
 
+import lombok.Getter;
 import org.springframework.data.domain.Page;
 
+@Getter
 public class CategoriaDto {
 	
 	private Long id;
@@ -10,14 +12,6 @@ public class CategoriaDto {
 	public CategoriaDto(Categoria cat) {
 		this.nome = cat.getNome();
 		this.id = cat.getId();
-	}
-	
-	public String getNome() {
-		return nome;
-	}
-	
-	public Long getId() {
-		return id;
 	}
 	
 	public static Page<CategoriaDto> converter(Page<Categoria> categorias) {

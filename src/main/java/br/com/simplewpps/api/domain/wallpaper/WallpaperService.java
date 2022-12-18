@@ -58,7 +58,7 @@ public class WallpaperService {
 			throw new BadCredentialsException("Acesso negado!");
 	}
 	
-	public Page<WallpaperDto> buscarWallpapers(String titulo, String categoriaNome, Pageable paginacao) {
+	public Page<DadosWallpaper> buscarWallpapers(String titulo, String categoriaNome, Pageable paginacao) {
 		Page<Wallpaper> wpps;
 		if (titulo == null && categoriaNome == null) {
 			wpps = wppRepository.findAll(paginacao);
@@ -69,16 +69,16 @@ public class WallpaperService {
 		} else {
 			wpps = wppRepository.findByTituloAndCategoriasNome(titulo, categoriaNome, paginacao);
 		}
-		return WallpaperDto.converter(wpps);
+		return DadosWallpaper.converter(wpps);
 	}
 	
-	public DetailedWallpaperDto buscarWallpaperPorId(Long id) {
+	public DadosDetalhadosWallpaper buscarWallpaperPorId(Long id) {
 		Wallpaper wpp = this.extrairWallpaper(id);
-		return new DetailedWallpaperDto(wpp);
+		return new DadosDetalhadosWallpaper(wpp);
 	}
 	
 	@Transactional
-	public WallpaperDto criarWallpaper(SalvarWallpaperForm form, HttpServletRequest request) {
+	public DadosWallpaper criarWallpaper(SalvarWallpaperForm form, HttpServletRequest request) {
 		HashSet<Categoria> categorias = this.extrairCategorias(form);
 		
 		Wallpaper wpp = form.converter();
@@ -88,23 +88,29 @@ public class WallpaperService {
 		wpp.setAutor(user);
 		this.wppRepository.save(wpp);
 		
-		return new WallpaperDto(wpp);
+		return new DadosWallpaper(wpp);
 	}
 	
 	@Transactional
-	public WallpaperDto editarWallpaper(Long id, SalvarWallpaperForm form, HttpServletRequest request) {	
+	public DadosWallpaper editarWallpaper(Long id, SalvarWallpaperForm form, HttpServletRequest request) {
 		Wallpaper wpp = this.extrairWallpaper(id);
 		
 		this.verificaSeTemPermissao(request, wpp);
-		
-		wpp.setTitulo(form.getTitulo());
-		wpp.setUrl(form.getUrl());
-		wpp.resetarCategorias();
-	
-		HashSet<Categoria> categorias = extrairCategorias(form);
-		categorias.forEach(cat -> wpp.adicionarCategoria(cat));
-		this.wppRepository.save(wpp);
-		return new WallpaperDto(wpp);
+
+		if (form.getUrl() != null) {
+			wpp.setUrl(form.getUrl());
+		}
+		if (form.getTitulo() != null) {
+			wpp.setTitulo(form.getTitulo());
+		}
+		if (form.getCategorias() != null) {
+			HashSet<Categoria> categorias = extrairCategorias(form);
+			if (categorias.size() > 0) {
+				wpp.resetarCategorias();
+				categorias.forEach(cat -> wpp.adicionarCategoria(cat));
+			}
+		}
+		return new DadosWallpaper(wpp);
 	}
 	
 	@Transactional
@@ -128,9 +134,9 @@ public class WallpaperService {
 		user.descurtirWallpaper(wpp);
 	}
 	
-	public Page<WallpaperDto> buscarWallpapersSalvos(HttpServletRequest request, Pageable paginacao) {
+	public Page<DadosWallpaper> buscarWallpapersSalvos(HttpServletRequest request, Pageable paginacao) {
 		Usuario user = this.extrairUsuario(request);
 		Page<Wallpaper> wpps = userRepository.getWallpapersSalvos(user.getId(), paginacao);
-		return WallpaperDto.converter(wpps);
+		return DadosWallpaper.converter(wpps);
 	}
 }

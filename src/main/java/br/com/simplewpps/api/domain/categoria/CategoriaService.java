@@ -11,11 +11,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import br.com.simplewpps.api.domain.categoria.CategoriaDto;
-import br.com.simplewpps.api.domain.categoria.SalvarCategoriaForm;
-import br.com.simplewpps.api.domain.categoria.Categoria;
-import br.com.simplewpps.api.domain.categoria.CategoriaRepository;
-
 @Service
 public class CategoriaService {
 	
@@ -61,10 +56,10 @@ public class CategoriaService {
 	
 	@Transactional
 	public CategoriaDto editarCategoria(Long id, SalvarCategoriaForm form) {
-		verificaSeJaExisteCategoriaComNome(form.getNome());
+		verificaSeJaExisteCategoriaComNome(form.nome());
 		
 		Categoria categoria = this.extrairCategoria(id);
-		categoria.setNome(form.getNome());
+		categoria.setNome(form.nome());
 		this.catRepository.save(categoria);
 		
 		return new CategoriaDto(categoria);

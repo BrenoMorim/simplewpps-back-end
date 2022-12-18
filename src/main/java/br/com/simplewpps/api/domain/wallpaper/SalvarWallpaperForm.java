@@ -6,11 +6,13 @@ import java.util.List;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.Getter;
 import org.hibernate.validator.constraints.URL;
 
 import br.com.simplewpps.api.domain.categoria.Categoria;
 import br.com.simplewpps.api.domain.categoria.CategoriaRepository;
 
+@Getter
 public class SalvarWallpaperForm {
 	
 	@NotBlank
@@ -20,16 +22,7 @@ public class SalvarWallpaperForm {
 	private String url;
 	@NotNull
 	private List<String> categorias;
-	
-	public String getTitulo() {
-		return titulo;
-	}
-	public String getUrl() {
-		return url;
-	}
-	public List<String> getCategorias() {
-		return this.categorias;
-	}
+
 	public HashSet<Categoria> getCategoriasBanco(CategoriaRepository repository) {
 		if (this.categorias.size() > 5 || this.categorias.size() < 1) return null;
 		
