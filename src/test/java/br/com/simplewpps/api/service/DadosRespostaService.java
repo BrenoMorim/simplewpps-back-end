@@ -1,14 +1,14 @@
 package br.com.simplewpps.api.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import org.springframework.test.web.servlet.ResultActions;
 
-@Service
 public class DadosRespostaService {
-	
-	@Autowired
+
 	private MockMvcService mock;
+
+	public DadosRespostaService(MockMvcService mock) {
+		this.mock = mock;
+	}
 	
 	public String getToken(String email, String senha) throws Exception {
 		String content = mock.efetuarLogin(email, senha)

@@ -4,7 +4,9 @@ package br.com.simplewpps.api.controller;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -16,17 +18,26 @@ import org.springframework.test.web.servlet.ResultActions;
 import br.com.simplewpps.api.SimplewppsApplication;
 import br.com.simplewpps.api.service.DadosRespostaService;
 import br.com.simplewpps.api.service.MockMvcService;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes=SimplewppsApplication.class)
+@SpringBootTest(webEnvironment= SpringBootTest.WebEnvironment.MOCK, classes={ SimplewppsApplication.class })
 @ActiveProfiles("test")
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc()
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class AutenticacaoControllerTest {
 
 	@Autowired
+	private WebApplicationContext webApplicationContext;
 	private MockMvcService mock;
-	@Autowired
 	private DadosRespostaService service;
+
+	@Before
+	public void setup() {
+		this.mock = new MockMvcService(MockMvcBuilders.webAppContextSetup(webApplicationContext).build());
+		this.service = new DadosRespostaService(this.mock);
+	}
 	
 	@Test
 	public void deveRetornar400CasoDadosDeAutenticacaoEstejamErrados() throws Exception {

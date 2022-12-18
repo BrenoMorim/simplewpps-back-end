@@ -1,17 +1,16 @@
 package br.com.simplewpps.api.model;
 
+import java.time.LocalDateTime;
 import java.util.Objects;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import jakarta.persistence.*;
 
-@Entity
+@Entity(name = "Categoria")
+@Table(name = "categorias")
 public class Categoria {
 	
-	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+	@Id
+	private Long id = Long.valueOf(LocalDateTime.now().hashCode());
 	private String nome;
 	
 	public String getNome() {

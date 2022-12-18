@@ -3,10 +3,9 @@ package br.com.simplewpps.api.controller.form;
 import java.util.HashSet;
 import java.util.List;
 
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import org.hibernate.validator.constraints.URL;
 
 import br.com.simplewpps.api.model.Categoria;
@@ -15,9 +14,10 @@ import br.com.simplewpps.api.repository.CategoriaRepository;
 
 public class SalvarWallpaperForm {
 	
-	@NotNull @NotEmpty @Size(min=5, max=30)
+	@NotBlank
+	@Size(min=5, max=30)
 	private String titulo;
-	@NotNull @NotEmpty @URL
+	@NotBlank @URL
 	private String url;
 	@NotNull
 	private List<String> categorias;

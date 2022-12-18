@@ -4,20 +4,18 @@ import java.net.URI;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Service;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-@Service
 public class MockMvcService {
-	
+
 	private MockMvc mock;
-	
-	public MockMvcService(MockMvc mock) {
-		this.mock = mock;
+
+	public MockMvcService(MockMvc mockMvc) {
+		this.mock = mockMvc;
 	}
-	
+
 	public ResultActions performarGet(URI uri) throws Exception {
 		return mock.perform(MockMvcRequestBuilders
 				.get(uri)

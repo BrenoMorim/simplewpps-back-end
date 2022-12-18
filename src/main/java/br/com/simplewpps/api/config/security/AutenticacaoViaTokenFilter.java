@@ -2,33 +2,32 @@ package br.com.simplewpps.api.config.security;
 
 import java.io.IOException;
 
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import br.com.simplewpps.api.model.Usuario;
 import br.com.simplewpps.api.repository.UsuarioRepository;
 import br.com.simplewpps.api.service.TokenService;
 
+@Component
 public class AutenticacaoViaTokenFilter extends OncePerRequestFilter {
-	
-	private TokenService tokenService;
-	private UsuarioRepository repository;
 
-	public AutenticacaoViaTokenFilter(TokenService tokenService, UsuarioRepository repository) {
-		this.tokenService = tokenService;
-		this.repository = repository;
-	}
+	@Autowired
+	private TokenService tokenService;
+	@Autowired
+	private UsuarioRepository repository;
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
-		
 		String token = recuperarToken(request);
 		boolean valido = tokenService.isTokenValido(token);
 		if (valido) {

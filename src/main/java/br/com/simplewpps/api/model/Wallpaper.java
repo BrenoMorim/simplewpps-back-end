@@ -6,18 +6,14 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Objects;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
+import jakarta.persistence.*;
 
-@Entity
+@Entity(name = "Wallpaper")
+@Table(name = "wallpapers")
 public class Wallpaper {
-	
-	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+
+	@Id
+	private Long id = Long.valueOf(LocalDateTime.now().hashCode());
 	private String titulo;
 	private String url;
 	private LocalDateTime dataCriacao = LocalDateTime.now();

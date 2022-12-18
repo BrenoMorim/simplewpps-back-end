@@ -1,29 +1,23 @@
 package br.com.simplewpps.api.model;
 
+import jakarta.persistence.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToMany;
-
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-
-@Entity
+@Entity(name = "Usuario")
+@Table(name = "usuarios")
 public class Usuario implements UserDetails {
 
 	private static final long serialVersionUID = 7827011222191801266L;
-	
-	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+
+	@Id
+	private Long id = Long.valueOf(LocalDateTime.now().hashCode());
 	private String nickname;
 	private String email;
 	private String senha;

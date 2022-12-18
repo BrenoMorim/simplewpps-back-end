@@ -1,19 +1,19 @@
 package br.com.simplewpps.api.controller.form;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import br.com.simplewpps.api.model.Usuario;
 
 public class RegisterForm {
 
-	@NotBlank @NotNull @Size(min=3, max=20)
+	@NotBlank @Size(min=3, max=20)
 	private String nickname;
 	@Email() @NotNull
 	private String email;
-	@NotBlank @NotNull @Size(min=7, max=30)
+	@NotBlank @Size(min=7, max=30)
 	private String senha;
 	
 	public String getNickname() {

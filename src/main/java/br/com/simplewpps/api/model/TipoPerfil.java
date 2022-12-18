@@ -1,23 +1,24 @@
 package br.com.simplewpps.api.model;
 
+import java.time.LocalDateTime;
 import java.util.Objects;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 import org.springframework.security.core.GrantedAuthority;
 
-@Entity
-@Table(name="Perfil")
+@Entity(name = "Perfil")
+@Table(name="perfis")
 public class TipoPerfil implements GrantedAuthority {
 
 	private static final long serialVersionUID = -3961186406101131306L;
 
-	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+	@Id
+	private Long id = Long.valueOf(LocalDateTime.now().hashCode());
 	private String nome;
 	
 	@Override
