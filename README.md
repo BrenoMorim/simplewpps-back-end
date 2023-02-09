@@ -8,9 +8,9 @@ Api Rest simples para buscar e salvar wallpapers.
 | -------------  | --- |
 | :sparkles: Nome        | **Simple Wallpapers**
 | :label: Tecnologias | Java, Spring, postgresql
-| :rocket: URL         | https://simplewpps.herokuapp.com/swagger-ui.html
+| :rocket: URL         | <https://simplewpps.herokuapp.com/swagger-ui.html>
 
-![](https://github.com/BrenoMorim/simplewpps-back-end/blob/main/imagem-do-projeto.png?raw=true#vitrinedev)
+![Screenshot do projeto](https://github.com/BrenoMorim/simplewpps-back-end/blob/main/imagem-do-projeto.png?raw=true#vitrinedev)
 
 ## Detalhes do Projeto
 
