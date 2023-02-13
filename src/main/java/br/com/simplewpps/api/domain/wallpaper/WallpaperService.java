@@ -1,17 +1,14 @@
 package br.com.simplewpps.api.domain.wallpaper;
 
 import java.util.HashSet;
-import java.util.Optional;
 
 import br.com.simplewpps.api.infra.security.TokenService;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.stereotype.Service;
 

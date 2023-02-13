@@ -107,13 +107,13 @@ public class WallpaperControllerTest {
 		Long id = this.mock.criarWallpaperQualquerERetornarId(tokenUser);
 		
 		ResultActions resultCurtir = this.mock.curtirWallpaper(id, tokenUser);
-		assertEquals(Integer.valueOf(200), service.getStatus(resultCurtir));
+		assertEquals(Integer.valueOf(204), service.getStatus(resultCurtir));
 		
 		ResultActions wppsSalvos = this.mock.retornarWallpapersSalvos(tokenUser);
 		assertTrue(service.verificaSeCorpoContemJson(wppsSalvos, "id", id.toString()));
 		
 		ResultActions resultDescurtir = this.mock.descurtirWallpaper(id, tokenUser);
-		assertEquals(Integer.valueOf(200), service.getStatus(resultDescurtir));
+		assertEquals(Integer.valueOf(204), service.getStatus(resultDescurtir));
 		
 		wppsSalvos = this.mock.retornarWallpapersSalvos(tokenUser);
 		assertTrue(service.verificaSeCorpoContemJson(wppsSalvos, "content", "[]"));

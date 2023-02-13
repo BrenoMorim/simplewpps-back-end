@@ -2,7 +2,6 @@ package br.com.simplewpps.api.controller;
 
 import java.net.URI;
 
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -14,8 +13,6 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -75,22 +72,23 @@ public class WallpaperController {
 	@Transactional
 	public ResponseEntity<?> curtirWallpaper(@PathVariable Long id, HttpServletRequest request) {
 		this.service.curtirWallpaper(id, request);
-		return ResponseEntity.ok().build();
+		return ResponseEntity.noContent().build();
 	}
 	
 	@GetMapping("/descurtir/{id}")
 	@Transactional
 	public ResponseEntity<?> descurtirWallpaper(@PathVariable Long id, HttpServletRequest request) {
 		this.service.descurtirWallpaper(id, request);
-		return ResponseEntity.ok().build();
+		return ResponseEntity.noContent().build();
 	}
 	
 	@GetMapping("/salvos")
-	public Page<DadosWallpaper> listarWallpapersSalvos(@PageableDefault(direction = Direction.DESC, page = 0, size = 10) Pageable paginacao, HttpServletRequest request) {
-		try {			
-			return this.service.buscarWallpapersSalvos(request, paginacao);
+	public ResponseEntity<?> listarWallpapersSalvos(@PageableDefault(direction = Direction.DESC, page = 0, size = 10) Pageable paginacao, HttpServletRequest request) {
+
+		try {
+			return ResponseEntity.ok(this.service.buscarWallpapersSalvos(request, paginacao));
 		} catch (Exception e) {
-			return null;
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 		}
 	}
 }

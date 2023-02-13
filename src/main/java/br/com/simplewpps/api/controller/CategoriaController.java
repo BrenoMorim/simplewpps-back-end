@@ -2,8 +2,6 @@ package br.com.simplewpps.api.controller;
 
 import java.net.URI;
 
-import jakarta.persistence.EntityExistsException;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,7 +55,7 @@ public class CategoriaController {
 	}
 	
 	@PutMapping("/{id}")
-	@CacheEvict(value = "listaDeTopicos", allEntries = true)
+	@CacheEvict(value = "listaDeCategorias", allEntries = true)
 	public ResponseEntity<?> alterarCategoria(@PathVariable Long id, @RequestBody @Valid SalvarCategoriaForm form) {
 		DadosCategoria dto = service.editarCategoria(id, form);
 		return ResponseEntity.ok(dto);
